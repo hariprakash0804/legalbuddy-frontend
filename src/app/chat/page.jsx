@@ -552,18 +552,6 @@ export default function ChatPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between mt-4 px-2">
-                            <p className="text-[10px] text-indigo-300 font-bold tracking-widest uppercase">
-                                LegalBuddy AI v2.0 • Data Verified by Expert Systems
-                            </p>
-                            {showLoginPrompt && isGuest && (
-                                <div className="flex items-center gap-3 bg-amber-50/80 border border-amber-200/50 px-4 py-2 rounded-2xl animate-in slide-in-from-right-4 duration-500 shadow-sm backdrop-blur-md">
-                                    <span className="text-[11px] text-amber-800 font-bold">💡 Unlock full history</span>
-                                    <button onClick={() => router.push('/login')} className="text-[11px] font-black text-indigo-600 hover:indigo-800 underline uppercase tracking-tighter">Login Now</button>
-                                    <button onClick={() => setShowLoginPrompt(false)} className="text-amber-300 hover:text-amber-500 transition-colors ml-2">✕</button>
-                                </div>
-                            )}
-                        </div>
                     </div>
                 </div>
             </main>
