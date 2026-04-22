@@ -180,14 +180,13 @@ export default function ChatPage() {
             return;
         }
         
-        // Strip markdown symbols before speaking
         const cleanText = text
-            .replace(/\*\*/g, '')      // Remove bold **
-            .replace(/\*/g, '')        // Remove italic *
-            .replace(/#/g, '')         // Remove headers #
-            .replace(/__/g, '')        // Remove underline __
-            .replace(/> /g, '')        // Remove blockquotes >
-            .replace(/\[(.*?)\]\(.*?\)/g, '$1'); // Remove links but keep label
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/#/g, '')
+            .replace(/__/g, '')
+            .replace(/> /g, '')
+            .replace(/\[(.*?)\]\(.*?\)/g, '$1');
 
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = VOICE_LANG_MAP[selectedLanguage] || 'en-IN';
@@ -231,7 +230,6 @@ export default function ChatPage() {
                 langCode: selectedLanguage 
             };
             setMessages(prev => [...prev, botMsg]);
-            // Show login prompt for guests after first response
             if (isGuest && messages.length === 0) {
                 setShowLoginPrompt(true);
             }
@@ -262,168 +260,210 @@ export default function ChatPage() {
     if (!mounted) return <div className="flex h-screen items-center justify-center bg-white"><div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
     return (
-        <div className="flex h-screen bg-white text-slate-900 overflow-hidden font-sans">
+        <div className="flex h-screen text-slate-900 overflow-hidden font-sans animate-mesh-dark relative">
+            {/* Background Decorative Blobs */}
+            <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-300/20 rounded-full blur-[120px] blob-animate pointer-events-none"></div>
+            <div className="absolute bottom-[-10%] right-[-5%] w-[45%] h-[45%] bg-purple-300/20 rounded-full blur-[120px] blob-animate-delay pointer-events-none"></div>
+            <div className="absolute top-[30%] left-[40%] w-[30%] h-[30%] bg-blue-300/10 rounded-full blur-[100px] blob-animate-delay-2 pointer-events-none"></div>
+
             {/* Mobile Overlay Backdrop */}
             {isMobile && sidebarOpen && (
                 <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
             )}
 
             {/* Sidebar — slides over on mobile, inline on desktop */}
-            <div className={`transition-all duration-300 ease-in-out bg-slate-50 border-r border-slate-200 flex flex-col
-                ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[260px]' : 'w-0 opacity-0 overflow-hidden')}`}>
-                <div className="p-4 flex flex-col h-full">
-                    <button onClick={() => { setMessages([]); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-3 w-full p-3 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-sm font-medium mb-4">
-                        <span className="text-lg">+</span> New Chat
+            <aside className={`transition-all duration-500 ease-in-out glass-sidebar flex flex-col z-50
+                ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[280px]' : 'w-0 opacity-0 overflow-hidden')}`}>
+                <div className="p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-8 px-2">
+                        <div className="bg-gradient-to-br from-indigo-900 to-blue-900 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-white">⚖️</div>
+                        <span className="font-bold text-indigo-950 text-lg tracking-tight">LegalBuddy</span>
+                    </div>
+
+                    <button onClick={() => { setMessages([]); if (isMobile) setSidebarOpen(false); }} className="flex items-center justify-center gap-2 w-full p-3.5 rounded-xl bg-indigo-950 text-white hover:bg-black transition-all text-sm font-bold shadow-lg mb-8 group">
+                        <span className="text-xl group-hover:scale-110 transition-transform">+</span> New Chat
                     </button>
 
-                    <div className="flex-1 overflow-y-auto space-y-2 py-2">
-                        <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400 px-2 mb-2">Recent Queries</div>
-                        {messages.filter(m => m.role === 'user').slice(-8).reverse().map((m, i) => (
-                            <div key={i} className="px-3 py-2 text-xs text-slate-600 truncate hover:bg-slate-200 rounded-md cursor-pointer transition-colors">
+                    <div className="flex-1 overflow-y-auto space-y-3 py-2 custom-scrollbar">
+                        <div className="text-[10px] uppercase tracking-[0.2em] font-black text-indigo-900/40 px-2 mb-2">History</div>
+                        {messages.filter(m => m.role === 'user').slice(-10).reverse().map((m, i) => (
+                            <div key={i} className="px-4 py-3 text-xs text-slate-600 truncate hover:bg-white/40 hover:text-indigo-900 rounded-xl cursor-pointer transition-all border border-transparent hover:border-white/50 shadow-sm">
                                 💬 {m.text}
                             </div>
                         ))}
+                        {messages.length === 0 && (
+                            <div className="px-4 py-8 text-center border-2 border-dashed border-indigo-100 rounded-2xl">
+                                <p className="text-[11px] text-indigo-300 font-medium">No recent queries</p>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="pt-4 border-t border-slate-200 space-y-1">
-                        <button onClick={downloadChat} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-slate-200 transition-colors text-sm">
+                    <div className="pt-6 border-t border-indigo-100/50 space-y-2">
+                        <button onClick={downloadChat} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/40 transition-all text-sm font-medium text-slate-700">
                             📥 Export History
                         </button>
                         {isGuest ? (
-                            <div className="p-3 space-y-2">
-                                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Guest Mode</p>
-                                <button onClick={() => { router.push('/login'); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-2 w-full p-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors text-sm text-white font-medium">
-                                    🔐 Login to Save Chats
+                            <div className="mt-4 p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100/50 space-y-3">
+                                <p className="text-[10px] text-indigo-900/40 uppercase font-black tracking-widest">Guest Account</p>
+                                <button onClick={() => { router.push('/login'); if (isMobile) setSidebarOpen(false); }} className="w-full p-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition-all text-sm text-white font-bold shadow-md shadow-indigo-200">
+                                    Sign In
                                 </button>
-                                <button onClick={() => { router.push('/register'); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-2 w-full p-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-xs text-slate-600 font-medium">
-                                    ✨ Create Account
+                                <button onClick={() => { router.push('/register'); if (isMobile) setSidebarOpen(false); }} className="w-full p-3 rounded-xl border border-indigo-200 hover:bg-white transition-all text-xs text-indigo-700 font-bold">
+                                    Create Account
                                 </button>
                             </div>
                         ) : (
-                            <div className="p-3 flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                            <div className="p-3 flex items-center gap-3 bg-white/40 rounded-2xl border border-white/60">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white text-sm font-bold shadow-inner">
                                     {userEmail[0].toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate">{userEmail}</p>
+                                    <p className="text-xs font-black text-indigo-950 truncate uppercase tracking-tighter">{userEmail.split('@')[0]}</p>
+                                    <p className="text-[9px] text-indigo-400 truncate">{userEmail}</p>
                                 </div>
-                                <button onClick={logout} className="text-slate-400 hover:text-red-500 transition-colors" title="Logout">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                <button onClick={logout} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Logout">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                                 </button>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
+            </aside>
 
             {/* Main Content Area */}
-            <div className={`flex-1 flex flex-col relative h-full transition-all duration-300`}>
+            <main className={`flex-1 flex flex-col relative h-full transition-all duration-500 z-10`}>
                 {/* Header */}
-                <header className="h-14 md:h-16 flex items-center justify-between px-3 md:px-4 sticky top-0 bg-white/80 backdrop-blur-sm z-20">
-                    <div className="flex items-center gap-2">
-                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" aria-label="Toggle sidebar">
-                            {sidebarOpen && !isMobile ? '◂' : '☰'}
+                <header className="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 glass-header z-20">
+                    <div className="flex items-center gap-4">
+                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2.5 hover:bg-white/50 rounded-xl text-indigo-900 transition-all border border-transparent hover:border-white/60" aria-label="Toggle sidebar">
+                            {sidebarOpen && !isMobile ? (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            ) : (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                            )}
                         </button>
-                        <h1 className="font-bold text-indigo-950 flex items-center gap-1.5">
-                            <span className="text-lg md:text-xl">⚖️</span>
-                            <span className="text-sm md:text-base">LegalBuddy <span className="text-[9px] md:text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full uppercase ml-1">AI PRO</span></span>
-                        </h1>
+                        <div className="flex flex-col">
+                            <h1 className="font-black text-indigo-950 text-base md:text-lg tracking-tight flex items-center gap-2 uppercase">
+                                LegalBuddy <span className="text-[9px] bg-indigo-950 text-white px-2 py-0.5 rounded-md tracking-[0.1em] font-black">PRO</span>
+                            </h1>
+                            <p className="text-[10px] text-indigo-400 font-bold tracking-widest hidden md:block">INDIAN LEGAL INTELLIGENCE</p>
+                        </div>
                     </div>
 
-                    <div className="flex-1 max-w-sm mx-4 relative hidden md:block">
-                        <input
-                            type="text" placeholder="Search conversation..."
-                            className="w-full bg-slate-100 border-none rounded-full px-4 py-2 text-xs focus:ring-2 focus:ring-indigo-500 underline-offset-0"
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 max-w-sm relative hidden lg:block">
+                            <input
+                                type="text" placeholder="Search insights..."
+                                className="w-64 bg-white/40 border border-white/60 rounded-xl px-4 py-2.5 text-xs focus:ring-4 focus:ring-indigo-100 outline-none transition-all placeholder-indigo-300"
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-indigo-900 shadow-sm cursor-help">
+                            <span className="text-sm">✨</span>
+                        </div>
                     </div>
                 </header>
 
-                {/* Messages Column (ChatGPT Inspired Centered View) */}
-                <div className="flex-1 overflow-y-auto pt-4 pb-32">
-                    <div className="max-w-3xl mx-auto px-4 md:px-0">
+                {/* Messages Column */}
+                <div className="flex-1 overflow-y-auto pt-8 pb-40 px-4 scroll-smooth custom-scrollbar">
+                    <div className="max-w-4xl mx-auto w-full">
                         {messages.length === 0 && (
-                            <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-                                <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-sm border border-indigo-100 animate-bounce">⚖️</div>
-                                <h2 className="text-2xl font-bold text-indigo-950 mb-3">How can I assist your legal research?</h2>
-                                <p className="text-slate-500 max-w-md text-sm leading-relaxed mb-8">
-                                    I am your intelligent legal companion, trained on Indian state and central laws to provide accurate, multi-lingual guidance.
+                            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in zoom-in duration-700">
+                                <div className="w-24 h-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center text-5xl mb-8 shadow-2xl border border-white/80 rotate-3 hover:rotate-0 transition-all duration-500">⚖️</div>
+                                <h2 className="text-3xl md:text-4xl font-black text-indigo-950 mb-4 tracking-tighter leading-tight">
+                                    Hello, <span className="text-indigo-600">{userEmail.split('@')[0]}</span>.<br />
+                                    How can I guide your legal research?
+                                </h2>
+                                <p className="text-slate-500 max-w-lg text-sm md:text-base leading-relaxed mb-10 font-medium">
+                                    I am an AI trained on Central and State acts. Ask about IPC sections, local rules, or procedural guidelines in 22 languages.
                                 </p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
-                                    {['What is Section 302 IPC?', 'Explain 498A guidelines', 'Kerala local building rules', 'Rights under RTI Act'].map(q => (
-                                        <button key={q} onClick={() => setInput(q)} className="p-4 bg-white border border-slate-100 rounded-2xl text-left text-xs font-medium text-slate-700 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all shadow-sm">
-                                            {q} →
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
+                                    {[
+                                        {q: 'What is Section 302 IPC punishment?', icon: '🛡️'},
+                                        {q: 'Recent guidelines for 498A cases', icon: '⚖️'},
+                                        {q: 'Kerala land building rules 2024', icon: '🏠'},
+                                        {q: 'Consumer rights for online fraud', icon: '💳'}
+                                    ].map(item => (
+                                        <button key={item.q} onClick={() => setInput(item.q)} className="suggestion-card p-5 rounded-2xl text-left flex items-start gap-4">
+                                            <span className="text-2xl mt-1">{item.icon}</span>
+                                            <div className="flex-1">
+                                                <p className="text-[13px] font-bold text-indigo-950 mb-1">{item.q}</p>
+                                                <p className="text-[10px] text-indigo-400 font-medium">Ask LegalBuddy →</p>
+                                            </div>
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        <div className="space-y-8">
+                        <div className="space-y-10">
                             {filteredMessages.map((m, i) => (
-                                <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
-                                    <div className={`flex gap-4 w-full ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center shadow-sm ${m.role === 'user' ? 'bg-indigo-950 text-white' : 'bg-slate-100 text-indigo-600 border border-slate-200'
-                                            }`}>
+                                <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
+                                    <div className={`flex gap-4 w-full ${m.role === 'user' ? 'flex-row-reverse max-w-[85%]' : 'max-w-[92%]'}`}>
+                                        <div className={`w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${
+                                            m.role === 'user' ? 'bg-indigo-950 text-white rotate-2' : 'bg-white/80 text-indigo-600 border border-white shadow-md -rotate-2'
+                                        }`}>
                                             {m.role === 'user' ? 'U' : '⚖️'}
                                         </div>
-                                        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 px-1 flex items-center gap-2">
-                                                {m.role === 'user' ? (
-                                                    <span className="text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-full">YOU</span>
-                                                ) : (
-                                                    <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full italic">AI COUNSEL</span>
-                                                )}
-                                                <span className="text-[9px] font-medium">• {m.time}</span>
+                                        <div className="flex flex-col gap-2 flex-1 min-w-0">
+                                            <div className={`flex items-center gap-3 px-1 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                                <span className="text-[10px] font-black text-indigo-900/30 uppercase tracking-[0.2em]">
+                                                    {m.role === 'user' ? 'Citizen' : 'AI Counsel'}
+                                                </span>
+                                                <span className="w-1 h-1 rounded-full bg-indigo-100"></span>
+                                                <span className="text-[10px] font-bold text-indigo-200 uppercase">{m.time}</span>
                                             </div>
-                                            <div className={`text-[16px] leading-[1.8] py-1 selection:bg-indigo-100 selection:text-indigo-900 ${m.role === 'user' ? 'font-medium text-slate-800' : 'prose-legal text-slate-700'}`}>
+                                            <div className={`p-5 md:p-6 rounded-[1.75rem] shadow-sm leading-relaxed text-[15px] md:text-[16px] ${
+                                                m.role === 'user' ? 'glass-bubble-user rounded-tr-none font-medium' : 'glass-bubble-bot rounded-tl-none text-slate-700'
+                                            }`}>
                                                 {m.role === 'bot' ? renderBotText(m.text) : <p className="whitespace-pre-wrap">{m.text}</p>}
                                             </div>
 
                                             {m.role === 'bot' && (m.sources || m.language || m.chunks) && (
-                                                <div className="flex flex-wrap items-center gap-3 mt-8 pt-6 border-t border-slate-100">
-                                                    <div className="flex items-center gap-2 mr-2">
+                                                <div className="flex flex-wrap items-center gap-3 mt-4 animate-in fade-in duration-1000">
+                                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/40 border border-white/60 rounded-full">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">Legal Evidence:</span>
+                                                        <span className="text-[9px] font-black text-indigo-900 uppercase tracking-widest">Verification</span>
                                                     </div>
                                                     
                                                     {m.chunks && (
                                                         <div className="group relative">
-                                                            <span className="bg-white hover:bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl text-[10px] font-black border border-slate-200 hover:border-emerald-200 shadow-sm cursor-help transition-all flex items-center gap-2 group">
-                                                                <span className="text-emerald-500">📄</span>
-                                                                {m.chunks} Verified Citations
-                                                                <span className="text-slate-300 group-hover:text-emerald-400 transition-colors ml-1">ⓘ</span>
+                                                            <span className="bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-700 px-4 py-2 rounded-xl text-[10px] font-black border border-emerald-100/50 shadow-sm cursor-help transition-all flex items-center gap-2">
+                                                                <span className="text-emerald-500">✅</span>
+                                                                {m.chunks} Citations Found
                                                             </span>
-                                                            {/* Tooltip for sources */}
                                                             {m.sources && (
-                                                                <div className="absolute bottom-full left-0 mb-2 w-64 p-3 bg-white rounded-xl shadow-2xl border border-slate-100 text-[10px] leading-relaxed text-slate-600 hidden group-hover:block animate-in fade-in slide-in-from-bottom-2 z-30">
-                                                                    <div className="font-bold text-indigo-900 mb-1 border-b border-indigo-50 pb-1">Primary Documents:</div>
-                                                                    <div className="max-h-32 overflow-y-auto pr-1">
+                                                                <div className="absolute bottom-full left-0 mb-3 w-72 p-4 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white text-[11px] leading-relaxed text-slate-600 hidden group-hover:block animate-in fade-in slide-in-from-bottom-2 z-30">
+                                                                    <div className="font-black text-indigo-950 mb-2 border-b border-indigo-50 pb-2 flex items-center gap-2">
+                                                                        <span className="text-indigo-600">📜</span> PRIMARY RECORDS
+                                                                    </div>
+                                                                    <div className="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                                                                         {Array.isArray(m.sources)
                                                                             ? m.sources.map((s, idx) => (
-                                                                                <div key={idx} className="mb-0.5 last:mb-0 truncate">• {s.document || s.toString()} <span className="text-[8px] text-slate-400">({s.state || 'General'})</span></div>
+                                                                                <div key={idx} className="mb-2 p-2 bg-indigo-50/40 rounded-lg border border-indigo-100/50">
+                                                                                    <div className="font-bold text-indigo-900 truncate">• {s.document || s.toString()}</div>
+                                                                                    <div className="text-[9px] text-indigo-400 flex justify-between mt-1 uppercase font-bold tracking-tighter">
+                                                                                        <span>Section {s.section || 'N/A'}</span>
+                                                                                        <span>Jurisdiction: {s.state || 'National'}</span>
+                                                                                    </div>
+                                                                                </div>
                                                                             ))
-                                                                            : typeof m.sources === 'string'
-                                                                                ? m.sources.split(',').map((s, idx) => (
-                                                                                    <div key={idx} className="mb-0.5 last:mb-0 truncate">• {s.trim()}</div>
-                                                                                ))
-                                                                                : null
+                                                                            : <div className="p-2 bg-indigo-50 rounded-lg">• {m.sources}</div>
                                                                         }
                                                                     </div>
                                                                 </div>
                                                             )}
                                                         </div>
                                                     )}
-                                                    {/* Speaker Button */}
                                                     <button 
                                                         onClick={() => speakMessage(m.text)}
-                                                        className={`p-1.5 rounded-lg border border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 transition-all group flex items-center gap-2 ${isSpeaking ? 'bg-indigo-50 border-indigo-300' : 'bg-white'}`}
+                                                        className={`px-4 py-2 rounded-xl border transition-all flex items-center gap-2 ${
+                                                            isSpeaking ? 'bg-indigo-600 border-indigo-700 text-white shadow-lg' : 'bg-white/50 border-white/80 text-indigo-900 hover:bg-white'
+                                                        }`}
                                                         title="Read Aloud"
                                                     >
-                                                        <span className={`text-xs ${isSpeaking ? 'animate-pulse text-indigo-600' : 'text-slate-400'}`}>
-                                                            {isSpeaking ? '🔊' : '🔈'}
-                                                        </span>
-                                                        <span className="text-[10px] font-bold text-slate-500">Listen</span>
+                                                        <span className={isSpeaking ? 'animate-pulse' : ''}>{isSpeaking ? '🔊' : '🔈'}</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">{isSpeaking ? 'Reading...' : 'Listen'}</span>
                                                     </button>
                                                 </div>
                                             )}
@@ -433,13 +473,13 @@ export default function ChatPage() {
                             ))}
 
                             {loading && (
-                                <div className="flex gap-4 animate-pulse">
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200"></div>
-                                    <div className="flex-1 space-y-4 py-1">
-                                        <div className="h-2 bg-slate-100 rounded w-1/4"></div>
+                                <div className="flex gap-4 animate-pulse max-w-[50%]">
+                                    <div className="w-10 h-10 rounded-2xl bg-white/60 border border-white"></div>
+                                    <div className="flex-1 space-y-4 py-2">
+                                        <div className="h-2.5 bg-white/60 rounded-full w-1/3"></div>
                                         <div className="space-y-3">
-                                            <div className="h-2 bg-slate-50 rounded"></div>
-                                            <div className="h-2 bg-slate-50 rounded w-5/6"></div>
+                                            <div className="h-2 bg-white/40 rounded-full"></div>
+                                            <div className="h-2 bg-white/40 rounded-full w-5/6"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -449,97 +489,98 @@ export default function ChatPage() {
                     <div ref={scrollRef} />
                 </div>
 
-                {/* The "Command Center" Floating Input Pill */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 md:p-8 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none">
-                    <div className="max-w-3xl mx-auto w-full pointer-events-auto">
-                        {/* Selectors row — above input on mobile, inside on desktop */}
-                        <div className="flex items-center gap-2 mb-2 md:hidden px-1 input-tools-row">
-                            <select
-                                value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
-                                className="legal-select text-indigo-600 flex-1"
-                            >
-                                {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 Global' : l.name}</option>)}
-                            </select>
-                            <select
-                                value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                className="legal-select text-slate-600 flex-1"
-                            >
-                                {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 All India' : s}</option>)}
-                            </select>
-                            <button 
-                                onClick={startListening}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${isListening ? 'bg-red-50 text-red-600 shadow-inner' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'}`}
-                                title="Voice Input"
-                            >
-                                <span className={isListening ? 'animate-pulse' : ''}>{isListening ? '🎙️' : '🎤'}</span>
-                            </button>
-                        </div>
+                {/* The "Command Center" Input Area */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 bg-gradient-to-t from-indigo-50/80 via-indigo-50/50 to-transparent pointer-events-none">
+                    <div className="max-w-4xl mx-auto w-full pointer-events-auto">
+                        {/* Desktop Input Layout */}
+                        <div className="glass-input rounded-3xl p-2.5 flex flex-col gap-3 group focus-within:ring-4 focus-within:ring-indigo-200 transition-all">
+                            {/* Input Tools Row */}
+                            <div className="flex items-center gap-2 px-2 pt-1">
+                                <div className="flex items-center gap-2 bg-white/50 p-1 rounded-xl border border-white/60">
+                                    <select
+                                        value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
+                                        className="legal-select text-indigo-600 !border-none !bg-transparent !h-8 !py-0"
+                                    >
+                                        {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 English' : l.name}</option>)}
+                                    </select>
+                                    <div className="w-px h-4 bg-indigo-100"></div>
+                                    <select
+                                        value={selectedState} onChange={e => setSelectedState(e.target.value)}
+                                        className="legal-select text-slate-500 !border-none !bg-transparent !h-8 !py-0"
+                                    >
+                                        {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 National' : s}</option>)}
+                                    </select>
+                                </div>
 
-                        <div className="bg-white border border-slate-200 shadow-2xl rounded-2xl md:rounded-[1.75rem] p-2 flex items-end gap-2 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
+                                <div className="flex-1"></div>
 
-                            {/* Desktop-only inline selectors */}
-                            <div className="hidden md:flex items-center gap-1 self-center pl-2">
-                                <select
-                                    value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
-                                    className="legal-select text-indigo-600 uppercase tracking-tight text-[11px]"
-                                >
-                                    {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 Global' : l.name}</option>)}
-                                </select>
-                                <div className="w-px h-4 bg-slate-200 mx-1"></div>
-                                <select
-                                    value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                    className="legal-select text-slate-500 text-[11px]"
-                                >
-                                    {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 All India' : s}</option>)}
-                                </select>
-                                
-                                {/* Microphone Button */}
                                 <button 
                                     onClick={startListening}
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isListening ? 'bg-red-50 text-red-600 shadow-inner' : 'hover:bg-slate-100 text-slate-400'}`}
-                                    title="Voice Input"
+                                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                                        isListening ? 'bg-red-500 text-white shadow-lg animate-pulse' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+                                    }`}
+                                    title="Voice Query"
                                 >
-                                    <span className={isListening ? 'animate-pulse' : ''}>{isListening ? '🎙️' : '🎤'}</span>
+                                    <span className="text-lg">{isListening ? '🎙️' : '🎤'}</span>
                                 </button>
                             </div>
 
-                            <textarea
-                                value={input}
-                                onChange={e => setInput(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
-                                placeholder={isListening ? "Listening..." : "Consult LegalBuddy AI..."}
-                                className="flex-1 bg-transparent border-none outline-none text-sm md:text-[15px] pt-3 pb-3 px-2 resize-none max-h-40 min-h-[44px]"
-                                rows={Math.min(input.split('\n').length, 5)}
-                            />
+                            {/* Text Input Row */}
+                            <div className="flex items-end gap-3 px-2 pb-1">
+                                <textarea
+                                    value={input}
+                                    onChange={e => setInput(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
+                                    placeholder={isListening ? "Listening carefully..." : "Type your legal question (e.g. Rights during traffic stop...)"}
+                                    className="flex-1 bg-transparent border-none outline-none text-sm md:text-base py-3 px-2 resize-none max-h-40 min-h-[50px] placeholder-indigo-200 text-indigo-950 font-medium"
+                                    rows={Math.min(input.split('\n').length, 5)}
+                                />
 
-                            <button 
-                                onClick={loading ? stopGeneration : sendMessage} 
-                                disabled={!input.trim() && !loading}
-                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all flex-shrink-0 mb-0.5 mr-0.5 ${
-                                    (input.trim() || loading) ? 'bg-indigo-950 text-white shadow-md scale-100 hover:scale-105 active:scale-95' : 'bg-slate-100 text-slate-300 scale-90'
-                                }`}
-                                title={loading ? "Stop Generating" : "Send Query"}
-                            >
-                                {loading ? (
-                                    <div className="w-4 h-4 bg-white rounded-sm animate-pulse shadow-sm"></div>
-                                ) : (
-                                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
-                                )}
-                            </button>
-                        </div>
-                        <p className="text-[10px] text-center text-slate-400 mt-3 font-medium">
-                            LegalBuddy AI provides educational legal guidance based on official records. Verify critical matters with a qualified lawyer.
-                        </p>
-                        {showLoginPrompt && isGuest && (
-                            <div className="flex items-center justify-center gap-2 mt-2 p-2 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in">
-                                <span className="text-[11px] text-amber-700">💡 Login to save your chat history</span>
-                                <button onClick={() => router.push('/login')} className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">Login</button>
-                                <button onClick={() => setShowLoginPrompt(false)} className="text-slate-400 hover:text-slate-600 text-xs ml-1">✕</button>
+                                <button 
+                                    onClick={loading ? stopGeneration : sendMessage} 
+                                    disabled={!input.trim() && !loading}
+                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all flex-shrink-0 shadow-lg ${
+                                        (input.trim() || loading) ? 'bg-indigo-950 text-white hover:bg-black hover:-rotate-3 active:scale-90 scale-100' : 'bg-indigo-100 text-indigo-300 scale-95 opacity-50'
+                                    }`}
+                                >
+                                    {loading ? (
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    ) : (
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
+                                    )}
+                                </button>
                             </div>
-                        )}
+                        </div>
+
+                        <div className="flex items-center justify-between mt-4 px-2">
+                            <p className="text-[10px] text-indigo-300 font-bold tracking-widest uppercase">
+                                LegalBuddy AI v2.0 • Data Verified by Expert Systems
+                            </p>
+                            {showLoginPrompt && isGuest && (
+                                <div className="flex items-center gap-3 bg-amber-50/80 border border-amber-200/50 px-4 py-2 rounded-2xl animate-in slide-in-from-right-4 duration-500 shadow-sm backdrop-blur-md">
+                                    <span className="text-[11px] text-amber-800 font-bold">💡 Unlock full history</span>
+                                    <button onClick={() => router.push('/login')} className="text-[11px] font-black text-indigo-600 hover:indigo-800 underline uppercase tracking-tighter">Login Now</button>
+                                    <button onClick={() => setShowLoginPrompt(false)} className="text-amber-300 hover:text-amber-500 transition-colors ml-2">✕</button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </main>
+            
+            {/* CSS Injected here for extra polish if needed, but globals.css handles most */}
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(30, 27, 75, 0.05);
+                    border-radius: 20px;
+                }
+                .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+                    background: rgba(30, 27, 75, 0.1);
+                }
+            `}</style>
         </div>
     );
 }

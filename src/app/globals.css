@@ -7,7 +7,7 @@
   --color-accent-gold: #d4af37;
   --color-bubble-user: #1e1b4b;
   --color-bubble-bot: #ffffff;
-  --sidebar-width: 260px;
+  --sidebar-width: 280px;
 }
 
 body {
@@ -19,7 +19,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Premium Mesh Gradient Animation */
+/* ══════════════════════════════════════════════
+   Premium Mesh Gradient Animation
+   ══════════════════════════════════════════════ */
 @keyframes mesh-gradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -32,7 +34,16 @@ body {
   animation: mesh-gradient 15s ease infinite;
 }
 
-/* Glassmorphism Classes */
+/* Darker variant for chat page */
+.animate-mesh-dark {
+  background: linear-gradient(-45deg, #c7d2fe, #e0e7ff, #ede9fe, #dbeafe, #e0f2fe);
+  background-size: 400% 400%;
+  animation: mesh-gradient 20s ease infinite;
+}
+
+/* ══════════════════════════════════════════════
+   Glassmorphism Classes
+   ══════════════════════════════════════════════ */
 .glass-panel {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
@@ -41,13 +52,79 @@ body {
 }
 
 .glass-nav {
-  background: rgba(30, 27, 75, 0.85); /* Midnight Indigo with opacity */
+  background: rgba(30, 27, 75, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Custom Scrollbar for modern look */
+/* Glass Sidebar */
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Glass Header */
+.glass-header {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Glass Input Bar */
+.glass-input {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Glass Message Bubbles */
+.glass-bubble-user {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(30, 27, 75, 0.25);
+}
+
+.glass-bubble-bot {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.06);
+}
+
+/* ══════════════════════════════════════════════
+   Floating Blob Animations
+   ══════════════════════════════════════════════ */
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(10px, -10px) scale(1.02); }
+}
+
+.blob-animate {
+  animation: float-blob 20s ease-in-out infinite;
+}
+
+.blob-animate-delay {
+  animation: float-blob 25s ease-in-out infinite;
+  animation-delay: 5s;
+}
+
+.blob-animate-delay-2 {
+  animation: float-blob 22s ease-in-out infinite;
+  animation-delay: 10s;
+}
+
+/* ══════════════════════════════════════════════
+   Custom Scrollbar
+   ══════════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -57,15 +134,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(165, 180, 252, 0.4);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(129, 140, 248, 0.6);
 }
 
-/* Typography Overrides */
+/* ══════════════════════════════════════════════
+   Typography Overrides
+   ══════════════════════════════════════════════ */
 .prose-legal {
   line-height: 1.75;
   font-size: 0.9375rem;
@@ -77,14 +156,16 @@ body {
   font-weight: 600;
 }
 
-/* ── Fix Native Select Dropdowns ── */
+/* ══════════════════════════════════════════════
+   Fix Native Select Dropdowns
+   ══════════════════════════════════════════════ */
 select.legal-select {
   appearance: auto !important;
   -webkit-appearance: menulist !important;
   -moz-appearance: menulist !important;
-  background-color: transparent;
-  border: 1px solid #e2e8f0;
-  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(199, 210, 254, 0.5);
+  border-radius: 12px;
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -92,14 +173,18 @@ select.legal-select {
   outline: none;
   min-height: 36px;
   color: inherit;
+  transition: all 0.2s;
 }
 
 select.legal-select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
-/* ── Mobile Sidebar Overlay ── */
+/* ══════════════════════════════════════════════
+   Mobile Sidebar Overlay
+   ══════════════════════════════════════════════ */
 .sidebar-overlay {
   display: none;
 }
@@ -109,8 +194,9 @@ select.legal-select:focus {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(2px);
+    background: rgba(30, 27, 75, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 40;
   }
 
@@ -137,7 +223,9 @@ select.legal-select:focus {
   }
 }
 
-/* ── Mobile Input Bar ── */
+/* ══════════════════════════════════════════════
+   Mobile Input Bar
+   ══════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .input-tools-row {
     flex-wrap: wrap;
@@ -148,6 +236,24 @@ select.legal-select:focus {
     font-size: 11px;
     padding: 4px 8px;
     min-height: 32px;
-    max-width: 120px;
+    max-width: 130px;
   }
+}
+
+/* ══════════════════════════════════════════════
+   Suggestion Card Hover
+   ══════════════════════════════════════════════ */
+.suggestion-card {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.suggestion-card:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(165, 180, 252, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.12);
 }
