@@ -365,7 +365,7 @@ export default function ChatPage() {
                 </header>
 
                 {/* Messages Column */}
-                <div className="flex-1 overflow-y-auto pt-8 pb-56 px-4 scroll-smooth custom-scrollbar">
+                <div className="flex-1 overflow-y-auto pt-4 md:pt-8 px-4 scroll-smooth custom-scrollbar">
                     <div className="max-w-4xl mx-auto w-full">
                         {messages.length === 0 && (
                             <div className="flex flex-col items-center pt-12 md:pt-24 text-center animate-in fade-in zoom-in duration-700">
@@ -490,8 +490,8 @@ export default function ChatPage() {
                 </div>
 
                 {/* The "Command Center" Input Area */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 bg-gradient-to-t from-indigo-50/80 via-indigo-50/50 to-transparent pointer-events-none">
-                    <div className="max-w-4xl mx-auto w-full pointer-events-auto">
+                <div className="p-4 md:p-8 bg-gradient-to-t from-indigo-50/80 to-transparent flex-shrink-0">
+                    <div className="max-w-4xl mx-auto w-full">
                         {/* Desktop Input Layout */}
                         <div className="glass-input rounded-[2.5rem] p-3 flex flex-col gap-2 group focus-within:ring-4 focus-within:ring-indigo-100/50 transition-all">
                             {/* Input Tools Row */}
@@ -551,7 +551,6 @@ export default function ChatPage() {
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </main>
