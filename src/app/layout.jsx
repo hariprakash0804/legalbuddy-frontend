@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "LegalBuddy AI",
+  title: "LegalBuddy AI (Redesigned)",
   description: "Multilingual Indian legal assistant",
 };
 
