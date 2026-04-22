@@ -277,7 +277,7 @@ export default function ChatPage() {
             {/* Sidebar — slides over on mobile, inline on desktop */}
             <aside className={`transition-all duration-500 ease-in-out glass-sidebar flex flex-col z-50 h-full
                 ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[280px]' : 'w-0 opacity-0 overflow-hidden')}`}>
-                <div className="p-6 flex flex-col h-full overflow-hidden">
+                <div className="p-6 pt-10 flex flex-col h-full overflow-hidden">
                     <div className="flex items-center gap-3 mb-8 px-2 flex-shrink-0">
                         <div className="bg-gradient-to-br from-indigo-900 to-blue-900 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-white">⚖️</div>
                         <span className="font-bold text-indigo-950 text-lg tracking-tight">LegalBuddy</span>
@@ -334,9 +334,9 @@ export default function ChatPage() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative z-10 overflow-hidden">
+            <main className="flex-1 flex flex-col relative z-10 overflow-hidden pt-4 md:pt-6">
                 {/* Header */}
-                <header className="h-16 md:h-20 flex-shrink-0 flex items-center justify-between px-4 md:px-8 glass-header sticky top-0 z-20">
+                <header className="h-20 md:h-24 flex-shrink-0 flex items-center justify-between px-4 md:px-8 glass-header sticky top-0 z-20">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2.5 hover:bg-white/50 rounded-xl text-indigo-900 transition-all border border-transparent hover:border-white/60" aria-label="Toggle sidebar">
                             {sidebarOpen && !isMobile ? (
