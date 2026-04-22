@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fcfcfc;
+  --foreground: #1e293b;
+  --color-primary-indigo: #1e1b4b;
+  --color-accent-gold: #d4af37;
+  --color-bubble-user: #1e1b4b;
+  --color-bubble-bot: #ffffff;
+  --sidebar-width: 260px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Premium Mesh Gradient Animation */
+@keyframes mesh-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-mesh {
+  background: linear-gradient(-45deg, #e0e7ff, #f0f9ff, #faf5ff, #ffffff);
+  background-size: 400% 400%;
+  animation: mesh-gradient 15s ease infinite;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-nav {
+  background: rgba(30, 27, 75, 0.85); /* Midnight Indigo with opacity */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Typography Overrides */
+.prose-legal {
+  line-height: 1.75;
+  font-size: 0.9375rem;
+  color: #334155;
+}
+
+.prose-legal strong {
+  color: #1e1b4b;
+  font-weight: 600;
+}
