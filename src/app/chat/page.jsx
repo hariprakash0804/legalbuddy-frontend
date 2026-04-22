@@ -216,8 +216,21 @@ export default function ChatPage() {
 
         try {
             const headers = isGuest ? {} : authHeader();
+            const history = messages.slice(-6).map(m => ({
+                role: m.role === 'bot' ? 'assistant' : 'user',
+                text: m.text
+            }));
+
             const res = await axios.post(`${getApiUrl()}/chat/query`,
-                { question: input, target_language: selectedLanguage, state_filter: selectedState === 'All States' ? null : selectedState, top_k: 20, max_tokens: 4000, temperature: 0.2 },
+                { 
+                    question: input, 
+                    target_language: selectedLanguage, 
+                    state_filter: selectedState === 'All States' ? null : selectedState, 
+                    top_k: 20, 
+                    max_tokens: 4000, 
+                    temperature: 0.2,
+                    history: history
+                },
                 { headers, signal: controller.signal }
             );
             const botMsg = {
