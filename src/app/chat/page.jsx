@@ -277,7 +277,7 @@ export default function ChatPage() {
             {/* Sidebar — slides over on mobile, inline on desktop */}
             <aside className={`transition-all duration-500 ease-in-out glass-sidebar flex flex-col z-50 h-full
                 ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[280px]' : 'w-0 opacity-0 overflow-hidden')}`}>
-                <div className="p-6 pt-24 flex flex-col h-full overflow-hidden">
+                <div className="p-6 pt-20 flex flex-col h-full overflow-hidden">
                     <div className="flex items-center gap-3 mb-8 px-2 flex-shrink-0">
                         <div className="bg-gradient-to-br from-indigo-900 to-blue-900 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-white">⚖️</div>
                         <span className="font-bold text-indigo-950 text-lg tracking-tight">LegalBuddy</span>
