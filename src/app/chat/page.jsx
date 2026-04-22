@@ -365,7 +365,7 @@ export default function ChatPage() {
                 </header>
 
                 {/* Messages Column */}
-                <div className="flex-1 overflow-y-auto pt-8 pb-40 px-4 scroll-smooth custom-scrollbar">
+                <div className="flex-1 overflow-y-auto pt-8 pb-56 px-4 scroll-smooth custom-scrollbar">
                     <div className="max-w-4xl mx-auto w-full">
                         {messages.length === 0 && (
                             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in zoom-in duration-700">
@@ -493,10 +493,10 @@ export default function ChatPage() {
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 bg-gradient-to-t from-indigo-50/80 via-indigo-50/50 to-transparent pointer-events-none">
                     <div className="max-w-4xl mx-auto w-full pointer-events-auto">
                         {/* Desktop Input Layout */}
-                        <div className="glass-input rounded-3xl p-2.5 flex flex-col gap-3 group focus-within:ring-4 focus-within:ring-indigo-200 transition-all">
+                        <div className="glass-input rounded-[2.5rem] p-3 flex flex-col gap-2 group focus-within:ring-4 focus-within:ring-indigo-100/50 transition-all">
                             {/* Input Tools Row */}
-                            <div className="flex items-center gap-2 px-2 pt-1">
-                                <div className="flex items-center gap-2 bg-white/50 p-1 rounded-xl border border-white/60">
+                            <div className="flex items-center gap-2 px-3 pt-1">
+                                <div className="flex items-center gap-2 bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white/40 shadow-sm">
                                     <select
                                         value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
                                         className="legal-select text-indigo-600 !border-none !bg-transparent !h-8 !py-0"
