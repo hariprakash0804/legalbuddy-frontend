@@ -179,7 +179,7 @@ export default function ChatPage() {
             setIsSpeaking(false);
             return;
         }
-        
+
         const cleanText = text
             .replace(/\*\*/g, '')
             .replace(/\*/g, '')
@@ -204,7 +204,7 @@ export default function ChatPage() {
 
     const sendMessage = async () => {
         if (!input.trim() || loading) return;
-        
+
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
@@ -220,14 +220,14 @@ export default function ChatPage() {
                 { question: input, target_language: selectedLanguage, state_filter: selectedState === 'All States' ? null : selectedState, top_k: 20, max_tokens: 4000, temperature: 0.2 },
                 { headers, signal: controller.signal }
             );
-            const botMsg = { 
-                role: 'bot', 
-                text: res.data.answer, 
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 
-                sources: res.data.sources, 
-                chunks: res.data.chunks_found, 
+            const botMsg = {
+                role: 'bot',
+                text: res.data.answer,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                sources: res.data.sources,
+                chunks: res.data.chunks_found,
                 language: langLabel,
-                langCode: selectedLanguage 
+                langCode: selectedLanguage
             };
             setMessages(prev => [...prev, botMsg]);
             if (isGuest && messages.length === 0) {
@@ -241,7 +241,7 @@ export default function ChatPage() {
             } else {
                 setMessages(prev => [...prev, { role: 'error', text: `⚠️ ${err.response?.data?.detail || 'Connection failed.'}`, time: new Date().toLocaleTimeString() }]);
             }
-        } finally { 
+        } finally {
             setLoading(false);
             abortControllerRef.current = null;
         }
@@ -263,7 +263,7 @@ export default function ChatPage() {
         <div className="fixed inset-0 flex text-slate-900 overflow-hidden font-sans">
             {/* Background Layer with Animation */}
             <div className="absolute inset-0 animate-mesh-dark -z-10"></div>
-            
+
             {/* Background Decorative Blobs */}
             <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-300/20 rounded-full blur-[120px] blob-animate pointer-events-none -z-10"></div>
             <div className="absolute bottom-[-10%] right-[-5%] w-[45%] h-[45%] bg-purple-300/20 rounded-full blur-[120px] blob-animate-delay pointer-events-none -z-10"></div>
@@ -277,7 +277,7 @@ export default function ChatPage() {
             {/* Sidebar — slides over on mobile, inline on desktop */}
             <aside className={`transition-all duration-500 ease-in-out glass-sidebar flex flex-col z-50 h-full
                 ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[280px]' : 'w-0 opacity-0 overflow-hidden')}`}>
-                <div className="p-6 pt-10 flex flex-col h-full overflow-hidden">
+                <div className="p-6 pt-24 flex flex-col h-full overflow-hidden">
                     <div className="flex items-center gap-3 mb-8 px-2 flex-shrink-0">
                         <div className="bg-gradient-to-br from-indigo-900 to-blue-900 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg text-white">⚖️</div>
                         <span className="font-bold text-indigo-950 text-lg tracking-tight">LegalBuddy</span>
@@ -325,7 +325,7 @@ export default function ChatPage() {
                                     <p className="text-[9px] text-indigo-400 truncate">{userEmail}</p>
                                 </div>
                                 <button onClick={logout} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Logout">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                                 </button>
                             </div>
                         )}
@@ -334,15 +334,15 @@ export default function ChatPage() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative z-10 overflow-hidden pt-4 md:pt-6">
+            <main className="flex-1 flex flex-col relative z-10 overflow-hidden pt-10 md:pt-20">
                 {/* Header */}
-                <header className="h-20 md:h-24 flex-shrink-0 flex items-center justify-between px-4 md:px-8 glass-header sticky top-0 z-20">
+                <header className="h-24 md:h-28 flex-shrink-0 flex items-center justify-between px-4 md:px-8 glass-header sticky top-0 z-20">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2.5 hover:bg-white/50 rounded-xl text-indigo-900 transition-all border border-transparent hover:border-white/60" aria-label="Toggle sidebar">
                             {sidebarOpen && !isMobile ? (
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
                             ) : (
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
                             )}
                         </button>
                         <div className="flex flex-col">
@@ -382,10 +382,10 @@ export default function ChatPage() {
                                 </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
                                     {[
-                                        {q: 'What is Section 302 IPC punishment?', icon: '🛡️'},
-                                        {q: 'Recent guidelines for 498A cases', icon: '⚖️'},
-                                        {q: 'Kerala land building rules 2024', icon: '🏠'},
-                                        {q: 'Consumer rights for online fraud', icon: '💳'}
+                                        { q: 'What is Section 302 IPC punishment?', icon: '🛡️' },
+                                        { q: 'Recent guidelines for 498A cases', icon: '⚖️' },
+                                        { q: 'Kerala land building rules 2024', icon: '🏠' },
+                                        { q: 'Consumer rights for online fraud', icon: '💳' }
                                     ].map(item => (
                                         <button key={item.q} onClick={() => setInput(item.q)} className="suggestion-card p-5 rounded-2xl text-left flex items-start gap-4">
                                             <span className="text-2xl mt-1">{item.icon}</span>
@@ -403,9 +403,8 @@ export default function ChatPage() {
                             {filteredMessages.map((m, i) => (
                                 <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                                     <div className={`flex gap-4 w-full ${m.role === 'user' ? 'flex-row-reverse max-w-[85%]' : 'max-w-[92%]'}`}>
-                                        <div className={`w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${
-                                            m.role === 'user' ? 'bg-indigo-950 text-white rotate-2' : 'bg-white/80 text-indigo-600 border border-white shadow-md -rotate-2'
-                                        }`}>
+                                        <div className={`w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${m.role === 'user' ? 'bg-indigo-950 text-white rotate-2' : 'bg-white/80 text-indigo-600 border border-white shadow-md -rotate-2'
+                                            }`}>
                                             {m.role === 'user' ? 'U' : '⚖️'}
                                         </div>
                                         <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -416,9 +415,8 @@ export default function ChatPage() {
                                                 <span className="w-1 h-1 rounded-full bg-indigo-100"></span>
                                                 <span className="text-[10px] font-bold text-indigo-200 uppercase">{m.time}</span>
                                             </div>
-                                            <div className={`p-5 md:p-6 rounded-[1.75rem] shadow-sm leading-relaxed text-[15px] md:text-[16px] ${
-                                                m.role === 'user' ? 'glass-bubble-user rounded-tr-none font-medium' : 'glass-bubble-bot rounded-tl-none text-slate-700'
-                                            }`}>
+                                            <div className={`p-5 md:p-6 rounded-[1.75rem] shadow-sm leading-relaxed text-[15px] md:text-[16px] ${m.role === 'user' ? 'glass-bubble-user rounded-tr-none font-medium' : 'glass-bubble-bot rounded-tl-none text-slate-700'
+                                                }`}>
                                                 {m.role === 'bot' ? renderBotText(m.text) : <p className="whitespace-pre-wrap">{m.text}</p>}
                                             </div>
 
@@ -428,7 +426,7 @@ export default function ChatPage() {
                                                         <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                                                         <span className="text-[9px] font-black text-indigo-900 uppercase tracking-widest">Verification</span>
                                                     </div>
-                                                    
+
                                                     {m.chunks && (
                                                         <div className="group relative">
                                                             <span className="bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-700 px-4 py-2 rounded-xl text-[10px] font-black border border-emerald-100/50 shadow-sm cursor-help transition-all flex items-center gap-2">
@@ -458,11 +456,10 @@ export default function ChatPage() {
                                                             )}
                                                         </div>
                                                     )}
-                                                    <button 
+                                                    <button
                                                         onClick={() => speakMessage(m.text)}
-                                                        className={`px-4 py-2 rounded-xl border transition-all flex items-center gap-2 ${
-                                                            isSpeaking ? 'bg-indigo-600 border-indigo-700 text-white shadow-lg' : 'bg-white/50 border-white/80 text-indigo-900 hover:bg-white'
-                                                        }`}
+                                                        className={`px-4 py-2 rounded-xl border transition-all flex items-center gap-2 ${isSpeaking ? 'bg-indigo-600 border-indigo-700 text-white shadow-lg' : 'bg-white/50 border-white/80 text-indigo-900 hover:bg-white'
+                                                            }`}
                                                         title="Read Aloud"
                                                     >
                                                         <span className={isSpeaking ? 'animate-pulse' : ''}>{isSpeaking ? '🔊' : '🔈'}</span>
@@ -517,11 +514,10 @@ export default function ChatPage() {
 
                                 <div className="flex-1"></div>
 
-                                <button 
+                                <button
                                     onClick={startListening}
-                                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                                        isListening ? 'bg-red-500 text-white shadow-lg animate-pulse' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
-                                    }`}
+                                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${isListening ? 'bg-red-500 text-white shadow-lg animate-pulse' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+                                        }`}
                                     title="Voice Query"
                                 >
                                     <span className="text-lg">{isListening ? '🎙️' : '🎤'}</span>
@@ -539,12 +535,11 @@ export default function ChatPage() {
                                     rows={Math.min(input.split('\n').length, 5)}
                                 />
 
-                                <button 
-                                    onClick={loading ? stopGeneration : sendMessage} 
+                                <button
+                                    onClick={loading ? stopGeneration : sendMessage}
                                     disabled={!input.trim() && !loading}
-                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all flex-shrink-0 shadow-lg ${
-                                        (input.trim() || loading) ? 'bg-indigo-950 text-white hover:bg-black hover:-rotate-3 active:scale-90 scale-100' : 'bg-indigo-100 text-indigo-300 scale-95 opacity-50'
-                                    }`}
+                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all flex-shrink-0 shadow-lg ${(input.trim() || loading) ? 'bg-indigo-950 text-white hover:bg-black hover:-rotate-3 active:scale-90 scale-100' : 'bg-indigo-100 text-indigo-300 scale-95 opacity-50'
+                                        }`}
                                 >
                                     {loading ? (
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -557,7 +552,7 @@ export default function ChatPage() {
                     </div>
                 </div>
             </main>
-            
+
             {/* CSS Injected here for extra polish if needed, but globals.css handles most */}
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
