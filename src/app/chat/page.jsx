@@ -86,7 +86,8 @@ const VOICE_LANG_MAP = {
 export default function ChatPage() {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [userEmail, setUserEmail] = useState('Guest');
     const [isGuest, setIsGuest] = useState(true);
     const [messages, setMessages] = useState([]);
@@ -101,6 +102,19 @@ export default function ChatPage() {
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const scrollRef = useRef();
     const abortControllerRef = useRef(null);
+
+    // Detect mobile and auto-manage sidebar
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (!mobile) setSidebarOpen(true);
+            else setSidebarOpen(false);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -249,10 +263,16 @@ export default function ChatPage() {
 
     return (
         <div className="flex h-screen bg-white text-slate-900 overflow-hidden font-sans">
-            {/* Minimalist Sidebar (ChatGPT Style) */}
-            <div className={`transition-all duration-300 ease-in-out bg-slate-50 border-r border-slate-200 flex flex-col ${sidebarOpen ? 'w-[260px]' : 'w-0 opacity-0 overflow-hidden'}`}>
+            {/* Mobile Overlay Backdrop */}
+            {isMobile && sidebarOpen && (
+                <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+            )}
+
+            {/* Sidebar — slides over on mobile, inline on desktop */}
+            <div className={`transition-all duration-300 ease-in-out bg-slate-50 border-r border-slate-200 flex flex-col
+                ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[260px]' : 'w-0 opacity-0 overflow-hidden')}`}>
                 <div className="p-4 flex flex-col h-full">
-                    <button onClick={() => setMessages([])} className="flex items-center gap-3 w-full p-3 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-sm font-medium mb-4">
+                    <button onClick={() => { setMessages([]); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-3 w-full p-3 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-sm font-medium mb-4">
                         <span className="text-lg">+</span> New Chat
                     </button>
 
@@ -272,10 +292,10 @@ export default function ChatPage() {
                         {isGuest ? (
                             <div className="p-3 space-y-2">
                                 <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Guest Mode</p>
-                                <button onClick={() => router.push('/login')} className="flex items-center gap-2 w-full p-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors text-sm text-white font-medium">
+                                <button onClick={() => { router.push('/login'); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-2 w-full p-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors text-sm text-white font-medium">
                                     🔐 Login to Save Chats
                                 </button>
-                                <button onClick={() => router.push('/register')} className="flex items-center gap-2 w-full p-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-xs text-slate-600 font-medium">
+                                <button onClick={() => { router.push('/register'); if (isMobile) setSidebarOpen(false); }} className="flex items-center gap-2 w-full p-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors text-xs text-slate-600 font-medium">
                                     ✨ Create Account
                                 </button>
                             </div>
@@ -299,14 +319,14 @@ export default function ChatPage() {
             {/* Main Content Area */}
             <div className={`flex-1 flex flex-col relative h-full transition-all duration-300`}>
                 {/* Header */}
-                <header className="h-16 flex items-center justify-between px-4 sticky top-0 bg-white/80 backdrop-blur-sm z-20">
+                <header className="h-14 md:h-16 flex items-center justify-between px-3 md:px-4 sticky top-0 bg-white/80 backdrop-blur-sm z-20">
                     <div className="flex items-center gap-2">
-                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors">
-                            {sidebarOpen ? '◂' : '▸'}
+                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" aria-label="Toggle sidebar">
+                            {sidebarOpen && !isMobile ? '◂' : '☰'}
                         </button>
-                        <h1 className="font-bold text-indigo-950 flex items-center gap-2">
-                            <span className="text-xl">⚖️</span>
-                            <span>LegalBuddy <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full uppercase ml-1">AI PRO</span></span>
+                        <h1 className="font-bold text-indigo-950 flex items-center gap-1.5">
+                            <span className="text-lg md:text-xl">⚖️</span>
+                            <span className="text-sm md:text-base">LegalBuddy <span className="text-[9px] md:text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full uppercase ml-1">AI PRO</span></span>
                         </h1>
                     </div>
 
@@ -429,25 +449,48 @@ export default function ChatPage() {
                     <div ref={scrollRef} />
                 </div>
 
-                {/* The "Command Center" Floating Input Pill (Gemini/ChatGPT Styled) */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none">
+                {/* The "Command Center" Floating Input Pill */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 md:p-8 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none">
                     <div className="max-w-3xl mx-auto w-full pointer-events-auto">
-                        <div className="bg-white border border-slate-200 shadow-2xl rounded-[1.75rem] p-2 flex items-end gap-2 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
+                        {/* Selectors row — above input on mobile, inside on desktop */}
+                        <div className="flex items-center gap-2 mb-2 md:hidden px-1 input-tools-row">
+                            <select
+                                value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
+                                className="legal-select text-indigo-600 flex-1"
+                            >
+                                {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 Global' : l.name}</option>)}
+                            </select>
+                            <select
+                                value={selectedState} onChange={e => setSelectedState(e.target.value)}
+                                className="legal-select text-slate-600 flex-1"
+                            >
+                                {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 All India' : s}</option>)}
+                            </select>
+                            <button 
+                                onClick={startListening}
+                                className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${isListening ? 'bg-red-50 text-red-600 shadow-inner' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'}`}
+                                title="Voice Input"
+                            >
+                                <span className={isListening ? 'animate-pulse' : ''}>{isListening ? '🎙️' : '🎤'}</span>
+                            </button>
+                        </div>
 
-                            {/* Input Tools Inside Pill */}
-                            <div className="flex items-center gap-1 self-center pl-2">
+                        <div className="bg-white border border-slate-200 shadow-2xl rounded-2xl md:rounded-[1.75rem] p-2 flex items-end gap-2 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
+
+                            {/* Desktop-only inline selectors */}
+                            <div className="hidden md:flex items-center gap-1 self-center pl-2">
                                 <select
                                     value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
-                                    className="bg-transparent text-[11px] font-bold text-indigo-600 hover:bg-indigo-50 rounded-full px-2 py-1 outline-none appearance-none cursor-pointer uppercase tracking-tight"
+                                    className="legal-select text-indigo-600 uppercase tracking-tight text-[11px]"
                                 >
                                     {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 Global' : l.name}</option>)}
                                 </select>
                                 <div className="w-px h-4 bg-slate-200 mx-1"></div>
                                 <select
                                     value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                    className="bg-transparent text-[11px] font-bold text-slate-500 hover:bg-slate-50 rounded-full px-2 py-1 outline-none appearance-none cursor-pointer max-w-[100px] truncate"
+                                    className="legal-select text-slate-500 text-[11px]"
                                 >
-                                    {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 India' : s}</option>)}
+                                    {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 All India' : s}</option>)}
                                 </select>
                                 
                                 {/* Microphone Button */}
@@ -465,7 +508,7 @@ export default function ChatPage() {
                                 onChange={e => setInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
                                 placeholder={isListening ? "Listening..." : "Consult LegalBuddy AI..."}
-                                className="flex-1 bg-transparent border-none outline-none text-[15px] pt-3 pb-3 px-2 resize-none max-h-40 min-h-[44px]"
+                                className="flex-1 bg-transparent border-none outline-none text-sm md:text-[15px] pt-3 pb-3 px-2 resize-none max-h-40 min-h-[44px]"
                                 rows={Math.min(input.split('\n').length, 5)}
                             />
 

@@ -76,3 +76,78 @@ body {
   color: #1e1b4b;
   font-weight: 600;
 }
+
+/* ── Fix Native Select Dropdowns ── */
+select.legal-select {
+  appearance: auto !important;
+  -webkit-appearance: menulist !important;
+  -moz-appearance: menulist !important;
+  background-color: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  min-height: 36px;
+  color: inherit;
+}
+
+select.legal-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* ── Mobile Sidebar Overlay ── */
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 40;
+  }
+
+  .mobile-sidebar {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 280px !important;
+    max-width: 85vw;
+  }
+
+  .mobile-sidebar-hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mobile-sidebar-visible {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* ── Mobile Input Bar ── */
+@media (max-width: 640px) {
+  .input-tools-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .input-tools-row select.legal-select {
+    font-size: 11px;
+    padding: 4px 8px;
+    min-height: 32px;
+    max-width: 120px;
+  }
+}
