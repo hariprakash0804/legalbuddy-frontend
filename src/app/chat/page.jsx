@@ -490,7 +490,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* The "Command Center" Input Area */}
-                <div className="p-4 md:p-8 bg-gradient-to-t from-indigo-50/80 to-transparent flex-shrink-0">
+                <div className="p-3 md:p-6 flex-shrink-0">
                     <div className="max-w-4xl mx-auto w-full">
                         {/* Desktop Input Layout */}
                         <div className="glass-input rounded-[2.5rem] p-3 flex flex-col gap-2 group focus-within:ring-4 focus-within:ring-indigo-100/50 transition-all">
