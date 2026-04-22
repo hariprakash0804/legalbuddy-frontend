@@ -371,7 +371,7 @@ export default function ChatPage() {
                             <div className="flex flex-col items-center pt-12 md:pt-24 text-center animate-in fade-in zoom-in duration-700">
                                 <div className="w-20 h-20 md:w-24 md:h-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center text-4xl md:text-5xl mb-8 shadow-2xl border border-white/80 rotate-3 hover:rotate-0 transition-all duration-500">⚖️</div>
                                 <h2 className="text-3xl md:text-4xl font-black text-indigo-950 mb-4 tracking-tighter leading-tight">
-                                    Hello, <span className="text-indigo-600">{userEmail.split('@')[0]}</span>.<br />
+                                    Welcome back, <span className="text-indigo-600">{userEmail.split('@')[0]}</span>.<br />
                                     How can I guide your legal research?
                                 </h2>
                                 <p className="text-slate-500 max-w-lg text-sm md:text-base leading-relaxed mb-10 font-medium">
