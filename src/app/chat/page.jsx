@@ -260,7 +260,7 @@ export default function ChatPage() {
     if (!mounted) return <div className="flex h-screen items-center justify-center bg-white"><div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
     return (
-        <div className="flex h-screen text-slate-900 overflow-hidden font-sans animate-mesh-dark relative">
+        <div className="flex h-[100dvh] w-full text-slate-900 overflow-hidden font-sans animate-mesh-dark relative top-0 left-0">
             {/* Background Decorative Blobs */}
             <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-300/20 rounded-full blur-[120px] blob-animate pointer-events-none"></div>
             <div className="absolute bottom-[-10%] right-[-5%] w-[45%] h-[45%] bg-purple-300/20 rounded-full blur-[120px] blob-animate-delay pointer-events-none"></div>
