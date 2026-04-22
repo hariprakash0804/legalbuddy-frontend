@@ -260,7 +260,7 @@ export default function ChatPage() {
     if (!mounted) return <div className="flex h-screen items-center justify-center bg-white"><div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
     return (
-        <div className="fixed inset-0 flex text-slate-900 overflow-hidden font-sans pt-16 md:pt-20">
+        <div className="fixed inset-0 flex text-slate-900 overflow-hidden font-sans pt-2">
             {/* Background Layer with Animation */}
             <div className="fixed inset-0 animate-mesh-dark -z-10"></div>
 
