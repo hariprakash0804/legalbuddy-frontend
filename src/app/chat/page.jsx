@@ -492,28 +492,28 @@ export default function ChatPage() {
                         {/* Desktop Input Layout */}
                         <div className="glass-input rounded-[2.5rem] p-3 flex flex-col gap-2 group focus-within:ring-4 focus-within:ring-indigo-100/50 transition-all">
                             {/* Input Tools Row */}
-                            <div className="flex items-center gap-2 px-3 pt-1">
-                                <div className="flex items-center gap-2 bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white/40 shadow-sm">
+                            <div className="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 pt-1 flex-wrap md:flex-nowrap">
+                                <div className="flex items-center gap-1.5 md:gap-2 bg-white/30 backdrop-blur-md p-1.5 rounded-2xl border border-white/40 shadow-sm max-w-[85%] md:max-w-none flex-1 md:flex-initial">
                                     <select
                                         value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
-                                        className="legal-select text-indigo-600 !border-none !bg-transparent !h-8 !py-0"
+                                        className="legal-select text-indigo-600 !border-none !bg-transparent !h-8 !py-0 flex-1 min-w-0 w-full truncate text-[11px] md:text-[12px] px-1 md:px-3"
                                     >
                                         {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 English' : l.name}</option>)}
                                     </select>
-                                    <div className="w-px h-4 bg-indigo-100"></div>
+                                    <div className="w-px h-4 bg-indigo-100 flex-shrink-0"></div>
                                     <select
                                         value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                        className="legal-select text-slate-500 !border-none !bg-transparent !h-8 !py-0"
+                                        className="legal-select text-slate-500 !border-none !bg-transparent !h-8 !py-0 flex-1 min-w-0 w-full truncate text-[11px] md:text-[12px] px-1 md:px-3"
                                     >
                                         {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 National' : s}</option>)}
                                     </select>
                                 </div>
 
-                                <div className="flex-1"></div>
+                                <div className="flex-1 hidden md:block"></div>
 
                                 <button
                                     onClick={startListening}
-                                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${isListening ? 'bg-red-500 text-white shadow-lg animate-pulse' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+                                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ml-auto md:ml-0 ${isListening ? 'bg-red-500 text-white shadow-lg animate-pulse' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
                                         }`}
                                     title="Voice Query"
                                 >
