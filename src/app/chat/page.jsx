@@ -528,7 +528,7 @@ export default function ChatPage() {
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
                                     placeholder={isListening ? "Listening carefully..." : "Type your legal question (e.g. Rights during traffic stop...)"}
-                                    className="flex-1 bg-transparent border-none outline-none text-sm md:text-base py-3 px-2 resize-none max-h-40 min-h-[50px] placeholder-indigo-200 text-indigo-950 font-medium"
+                                    className="flex-1 min-w-0 w-full bg-transparent border-none outline-none text-sm md:text-base py-3 px-2 resize-none max-h-40 min-h-[50px] placeholder-indigo-200 text-indigo-950 font-medium"
                                     rows={Math.min(input.split('\n').length, 5)}
                                 />
 
