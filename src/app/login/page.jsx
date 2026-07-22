@@ -88,7 +88,7 @@ export default function Login() {
 
                     <div className="mt-10 pt-8 border-t border-indigo-100/50 text-center">
                         <p className="text-sm text-indigo-800/60 font-medium">
-                            Don't have an account? 
+                            Don&apos;t have an account? 
                             <Link href="/register" className="text-indigo-700 hover:text-indigo-900 ml-2 font-bold underline-offset-4 hover:underline transition-all">
                                 Create an account
                             </Link>
