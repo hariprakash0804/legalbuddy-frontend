@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "LegalBuddy AI (Redesigned)",
-  description: "Multilingual Indian legal assistant",
+  title: "LegalBuddy AI — Indian Legal Assistant",
+  description: "Multilingual AI legal assistant trained on Indian law, IPC, BNS & Constitution",
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
@@ -37,7 +37,9 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="antialiased">{children}</body>
+      <body className="h-full min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-indigo-600 selection:text-white overflow-x-hidden">
+        {children}
+      </body>
     </html>
   );
 }
