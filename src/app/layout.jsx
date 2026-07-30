@@ -14,6 +14,13 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "LegalBuddy AI (Redesigned)",
   description: "Multilingual Indian legal assistant",
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export const viewport = {
