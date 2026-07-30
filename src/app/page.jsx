@@ -6,13 +6,16 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Always go to chat — guests can use it without login
+    // Redirect cleanly to /chat for guest & user access
     router.push('/chat');
   }, [router]);
 
   return (
-    <div className="flex h-screen items-center justify-center bg-slate-50">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+    <div className="flex h-screen items-center justify-center bg-[#F6F7F9]">
+      <div className="flex flex-col items-center">
+        <div className="w-10 h-10 border-3 border-[#0B5850] border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-xs font-mono font-medium text-[#2C3752] tracking-wider uppercase">Loading Lex Engine...</p>
+      </div>
     </div>
   );
 }
