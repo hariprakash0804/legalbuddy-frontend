@@ -214,9 +214,9 @@ export default function ChatPage() {
         if (!isGuest) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
         }
-        if (!searchTerm) { scrollRef.current?.scrollIntoView({ behavior: 'smooth' }); }
     }, [messages, STORAGE_KEY, searchTerm, mounted, isGuest]);
 
+    const filteredMessages = messages.filter(m => m.text.toLowerCase().includes(searchTerm.toLowerCase()));
     const { showToast } = useToast();
 
     const startListening = () => {
