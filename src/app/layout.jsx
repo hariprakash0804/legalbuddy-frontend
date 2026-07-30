@@ -21,7 +21,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "LegalBuddy — Verifiable Legal AI Assistant",
+  title: "LegalBuddy AI — Verifiable Legal AI Assistant",
   description: "Authority without intimidation. Verifiable legal intelligence for Indian Law, Constitution, IPC & BNS.",
   icons: {
     icon: [

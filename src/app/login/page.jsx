@@ -43,16 +43,16 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center min-h-[100dvh] w-full py-8 px-4 bg-[#F6F7F9]">
             {/* Top Disclosure Banner */}
             <div className="w-full max-w-md mb-6 p-2.5 rounded-xl bg-[#FBF8F1] border border-[#EAE4D7] text-center text-xs text-[#2C3752] font-medium">
-                <span className="text-[#0B5850] font-bold">ⓘ Lex Engine:</span> General legal research & statutory guidance
+                <span className="text-[#0B5850] font-bold">ⓘ LegalBuddy AI Engine:</span> General legal research & statutory guidance
             </div>
 
             <div className="w-full max-w-md my-auto">
                 <div className="lex-card p-8 sm:p-10 shadow-xl border border-[#D7DBE2] bg-white">
                     <div className="flex flex-col items-center mb-8 text-center">
                         <div className="w-12 h-12 rounded-xl bg-[#0E1B30] text-white flex items-center justify-center font-display font-semibold text-2xl mb-3 shadow-sm">
-                            L
+                            ⚖️
                         </div>
-                        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-[#0E1B30]">Welcome to Lex</h1>
+                        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-[#0E1B30]">Welcome to LegalBuddy AI</h1>
                         <p className="text-[#5B6472] text-xs sm:text-sm mt-1">Verifiable legal intelligence for citizens & professionals</p>
                     </div>
 

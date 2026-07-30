@@ -28,7 +28,7 @@ const LANGUAGES = [
     { code: 'kok', name: 'Konkani (कोंकणी)' },
     { code: 'mni-Mtei', name: 'Manipuri (মৈতৈলোন্)' },
     { code: 'bo', name: 'Bodo (बड़ो)' },
-    { code: 'sat', name: 'Santali (ᱥᱟᱱᱛᱟᱲᱤ)' },
+    { code: 'sat', name: 'Santali (<ctrl42>ᱥᱟᱱᱛᱟᱲᱤ)' },
 ];
 
 const STARTER_QUERIES = [
@@ -160,7 +160,7 @@ export default function ChatPage() {
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 140)}px`;
         }
     }, [input]);
 
@@ -214,6 +214,7 @@ export default function ChatPage() {
         if (!isGuest) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
         }
+        if (!searchTerm) { scrollRef.current?.scrollIntoView({ behavior: 'smooth' }); }
     }, [messages, STORAGE_KEY, searchTerm, mounted, isGuest]);
 
     const filteredMessages = messages.filter(m => m.text.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -338,7 +339,7 @@ export default function ChatPage() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Lex_Legal_Research_${new Date().toISOString().slice(0, 10)}.txt`;
+        a.download = `LegalBuddy_AI_Research_${new Date().toISOString().slice(0, 10)}.txt`;
         a.click();
     };
 
@@ -346,17 +347,17 @@ export default function ChatPage() {
         <div className="flex h-screen items-center justify-center bg-[#F6F7F9]">
             <div className="flex flex-col items-center">
                 <div className="w-10 h-10 border-3 border-[#0B5850] border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-4 text-xs font-mono font-medium text-[#2C3752] tracking-wider uppercase">Loading Lex Design System...</p>
+                <p className="mt-4 text-xs font-mono font-medium text-[#2C3752] tracking-wider uppercase">Loading LegalBuddy AI...</p>
             </div>
         </div>
     );
 
     return (
         <div className="fixed inset-0 flex flex-col text-[#0E1B30] overflow-hidden font-sans h-[100dvh] w-full bg-[#F6F7F9]">
-            {/* 1. PERSISTENT DISCLOSURE BAR (Never Dismissible) */}
-            <div className="disclosure-bar px-4 py-2 text-center flex items-center justify-center gap-2 flex-shrink-0">
-                <span className="text-[#0B5850]">ⓘ</span>
-                <span><strong>Lex</strong> provides general legal information for research purposes, not formal legal advice.</span>
+            {/* 1. PERSISTENT DISCLOSURE BAR */}
+            <div className="disclosure-bar px-3 py-1.5 text-center flex items-center justify-center gap-1.5 flex-shrink-0">
+                <span className="text-[#0B5850] flex-shrink-0">ⓘ</span>
+                <span className="truncate sm:whitespace-normal"><strong>LegalBuddy AI</strong> provides general legal information, not formal legal advice.</span>
             </div>
 
             <div className="flex-1 flex overflow-hidden w-full relative">
@@ -365,23 +366,23 @@ export default function ChatPage() {
                     <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                {/* 2. SIDEBAR - Lex Clean White Panel */}
+                {/* 2. SIDEBAR */}
                 <aside className={`transition-all duration-300 ease-in-out bg-white border-r border-[#D7DBE2] flex flex-col z-50 h-full
                     ${isMobile ? `mobile-sidebar ${sidebarOpen ? 'mobile-sidebar-visible' : 'mobile-sidebar-hidden'}` : (sidebarOpen ? 'w-[280px]' : 'w-0 opacity-0 overflow-hidden')}`}>
-                    <div className="p-5 flex flex-col h-full overflow-hidden">
-                        {/* Lex Brand Wordmark */}
-                        <div className="flex items-center justify-between mb-6 px-1 flex-shrink-0">
+                    <div className="p-4 sm:p-5 flex flex-col h-full overflow-hidden">
+                        {/* LegalBuddy AI Brand Wordmark */}
+                        <div className="flex items-center justify-between mb-5 px-1 flex-shrink-0">
                             <div className="flex items-center gap-2.5">
                                 <div className="w-8 h-8 rounded-lg bg-[#0E1B30] text-white flex items-center justify-center font-display font-semibold text-base shadow-sm">
-                                    L
+                                    ⚖️
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-display font-bold text-[#0E1B30] text-lg leading-none">Lex</span>
-                                    <span className="text-[10px] font-mono text-[#5B6472] uppercase tracking-wider mt-0.5">Legal AI Engine</span>
+                                    <span className="font-display font-bold text-[#0E1B30] text-lg leading-none">LegalBuddy AI</span>
+                                    <span className="text-[10px] font-mono text-[#5B6472] uppercase tracking-wider mt-0.5">Indian Legal Intelligence</span>
                                 </div>
                             </div>
                             {isMobile && (
-                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 text-[#5B6472] hover:text-[#0E1B30] rounded-md transition-all">
+                                <button onClick={() => setSidebarOpen(false)} className="p-2 text-[#5B6472] hover:text-[#0E1B30] rounded-md transition-all min-w-[36px] min-h-[36px] flex items-center justify-center">
                                     ✕
                                 </button>
                             )}
@@ -391,7 +392,7 @@ export default function ChatPage() {
                         <div className="mb-4 p-3 bg-[#DCEFEC] border border-[#0B5850]/20 rounded-xl flex flex-col gap-1 flex-shrink-0">
                             <span className="text-[10px] font-mono uppercase tracking-wider text-[#0B5850] font-bold">Active Jurisdiction</span>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-[#0B5850] flex items-center gap-1.5">
+                                <span className="text-xs font-semibold text-[#0B5850] flex items-center gap-1.5 truncate">
                                     <span>📍</span> {selectedState === 'All States' ? 'India (National)' : `${selectedState}, IN`}
                                 </span>
                                 <select
@@ -406,7 +407,7 @@ export default function ChatPage() {
                         {/* Primary Action Button */}
                         <button 
                             onClick={() => { setMessages([]); if (isMobile) setSidebarOpen(false); }} 
-                            className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#0E1B30] text-white hover:bg-[#1E2E4A] active:scale-[0.98] transition-all text-xs font-semibold shadow-sm mb-5 group"
+                            className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#0E1B30] text-white hover:bg-[#1E2E4A] active:scale-[0.98] transition-all text-xs font-semibold shadow-sm mb-4 group"
                         >
                             <span className="text-base group-hover:rotate-90 transition-transform duration-200">+</span> New question
                         </button>
@@ -435,8 +436,8 @@ export default function ChatPage() {
                         </div>
 
                         {/* Footer & Account Status */}
-                        <div className="pt-4 border-t border-[#D7DBE2] space-y-2 flex-shrink-0">
-                            <button onClick={downloadChat} className="flex items-center gap-2 w-full p-2.5 rounded-lg hover:bg-[#F6F7F9] transition-all text-xs font-semibold text-[#2C3752]">
+                        <div className="pt-3 border-t border-[#D7DBE2] space-y-2 flex-shrink-0">
+                            <button onClick={downloadChat} className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-[#F6F7F9] transition-all text-xs font-semibold text-[#2C3752]">
                                 <span>📥</span> Export Research Memo
                             </button>
                             {isGuest ? (
@@ -468,35 +469,34 @@ export default function ChatPage() {
                 {/* 3. MAIN WORKSPACE AREA */}
                 <main className="flex-1 flex flex-col relative z-10 overflow-hidden h-full bg-[#F6F7F9]">
                     {/* Header Bar */}
-                    <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 bg-white border-b border-[#D7DBE2] sticky top-0 z-20">
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-[#2C3752] hover:bg-[#F6F7F9] rounded-lg transition-all border border-transparent hover:border-[#D7DBE2]" aria-label="Toggle sidebar">
+                    <header className="h-13 flex-shrink-0 flex items-center justify-between px-3 sm:px-6 bg-white border-b border-[#D7DBE2] sticky top-0 z-20">
+                        <div className="flex items-center gap-2.5">
+                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-[#2C3752] hover:bg-[#F6F7F9] rounded-lg transition-all border border-transparent hover:border-[#D7DBE2] min-w-[38px] min-h-[38px] flex items-center justify-center" aria-label="Toggle sidebar">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
                             </button>
                             <div className="flex items-center gap-2">
-                                <span className="font-display font-bold text-[#0E1B30] text-base">Lex</span>
-                                <span className="text-[10px] bg-[#DCEFEC] text-[#0B5850] px-2 py-0.5 rounded font-mono font-bold uppercase">Verifiable AI</span>
+                                <span className="font-display font-bold text-[#0E1B30] text-base">LegalBuddy AI</span>
+                                <span className="text-[9px] bg-[#DCEFEC] text-[#0B5850] px-1.5 py-0.5 rounded font-mono font-bold uppercase">VERIFIABLE AI</span>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            {/* Jurisdiction Badge */}
-                            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEFEC] border border-[#0B5850]/20 text-[11px] font-semibold text-[#0B5850]">
+                        <div className="flex items-center gap-2">
+                            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#DCEFEC] border border-[#0B5850]/20 text-[11px] font-semibold text-[#0B5850]">
                                 <span>📍 Scope: {selectedState === 'All States' ? 'India' : selectedState}</span>
                             </div>
 
                             <div className="flex-1 max-w-xs relative hidden md:block">
                                 <input
-                                    type="text" placeholder="Search research history..."
+                                    type="text" placeholder="Search history..."
                                     value={searchTerm}
-                                    className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-[#0B5850] transition-all placeholder-[#5B6472]"
+                                    className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-1 text-xs focus:outline-none focus:border-[#0B5850] transition-all placeholder-[#5B6472]"
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
 
                             <button 
                                 onClick={() => setShowMobileSearch(!showMobileSearch)} 
-                                className="md:hidden p-2 rounded-lg bg-[#F6F7F9] border border-[#D7DBE2] text-xs"
+                                className="md:hidden p-2 rounded-lg bg-[#F6F7F9] border border-[#D7DBE2] text-xs min-w-[36px] min-h-[36px] flex items-center justify-center"
                             >
                                 🔍
                             </button>
@@ -505,11 +505,11 @@ export default function ChatPage() {
 
                     {/* Mobile Search Overlay */}
                     {showMobileSearch && (
-                        <div className="md:hidden p-3 bg-white border-b border-[#D7DBE2] z-20">
+                        <div className="md:hidden p-2.5 bg-white border-b border-[#D7DBE2] z-20">
                             <input
                                 type="text" placeholder="Search history..."
                                 value={searchTerm}
-                                className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-2 text-xs focus:outline-none"
+                                className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-1.5 text-xs focus:outline-none"
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 autoFocus
                             />
@@ -517,37 +517,37 @@ export default function ChatPage() {
                     )}
 
                     {/* 4. MESSAGES / RESEARCH REPORT AREA */}
-                    <div className="flex-1 overflow-y-auto pt-4 sm:pt-6 px-3 sm:px-6 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto pt-3 sm:pt-6 px-3 sm:px-6 custom-scrollbar">
                         <div className="max-w-3xl mx-auto w-full">
-                            {/* EMPTY STATE - Capability Transparency */}
+                            {/* EMPTY STATE */}
                             {messages.length === 0 && (
-                                <div className="py-8 sm:py-12 px-4 text-center">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#DCEFEC] text-[#0B5850] text-xs font-mono font-semibold mb-6">
+                                <div className="py-4 sm:py-10 px-2 text-center">
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEFEC] text-[#0B5850] text-xs font-mono font-semibold mb-4 sm:mb-6">
                                         ✦ Legal Information & Citation Engine
                                     </div>
                                     
-                                    <h1 className="font-display font-semibold text-3xl sm:text-4xl text-[#0E1B30] mb-4 tracking-tight">
+                                    <h1 className="font-display font-semibold text-2xl sm:text-4xl text-[#0E1B30] mb-2 sm:mb-4 tracking-tight leading-tight">
                                         Ask about your rights & legal obligations
                                     </h1>
-                                    <p className="text-[#2C3752] max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8">
-                                        Lex delivers structured, verified answers backed by primary statutory citations across Indian Central and State laws.
+                                    <p className="text-[#2C3752] max-w-lg mx-auto text-xs sm:text-base leading-relaxed mb-6 sm:mb-8">
+                                        LegalBuddy AI delivers structured, verified answers backed by primary statutory citations across Indian Central and State laws.
                                     </p>
 
                                     {/* Topic Grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left max-w-2xl mx-auto">
                                         {STARTER_QUERIES.map((q, idx) => (
                                             <button
                                                 key={idx}
                                                 onClick={() => setInput(q.query)}
-                                                className="p-4 rounded-xl bg-white border border-[#D7DBE2] hover:border-[#0B5850] hover:shadow-md transition-all text-xs flex flex-col gap-1.5 group"
+                                                className="p-3.5 rounded-xl bg-white border border-[#D7DBE2] hover:border-[#0B5850] hover:shadow-md transition-all text-xs flex flex-col gap-1 group"
                                             >
-                                                <div className="flex items-center justify-between w-full">
-                                                    <span className="font-semibold text-[#0E1B30] flex items-center gap-2 text-sm">
-                                                        <span>{q.icon}</span> {q.title}
+                                                <div className="flex items-center justify-between w-full min-w-0">
+                                                    <span className="font-semibold text-[#0E1B30] flex items-center gap-1.5 text-xs sm:text-sm truncate">
+                                                        <span>{q.icon}</span> <span className="truncate">{q.title}</span>
                                                     </span>
-                                                    <span className="text-[10px] font-mono bg-[#F6F7F9] text-[#5B6472] px-2 py-0.5 rounded border border-[#D7DBE2] uppercase group-hover:bg-[#DCEFEC] group-hover:text-[#0B5850] transition-colors">{q.category}</span>
+                                                    <span className="text-[9px] font-mono bg-[#F6F7F9] text-[#5B6472] px-1.5 py-0.5 rounded border border-[#D7DBE2] uppercase group-hover:bg-[#DCEFEC] group-hover:text-[#0B5850] transition-colors flex-shrink-0">{q.category}</span>
                                                 </div>
-                                                <span className="text-[#5B6472] text-[12px] leading-normal">{q.query}</span>
+                                                <span className="text-[#5B6472] text-[11px] sm:text-[12px] leading-relaxed line-clamp-2">{q.query}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -555,12 +555,12 @@ export default function ChatPage() {
                             )}
 
                             {/* CHAT MESSAGES THREAD */}
-                            <div className="space-y-6 pb-6">
+                            <div className="space-y-5 pb-4">
                                 {filteredMessages.map((m, i) => (
                                     <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
-                                        {/* USER TURN - Compact Ink 900 Bubble */}
+                                        {/* USER TURN */}
                                         {m.role === 'user' ? (
-                                            <div className="max-w-[85%] sm:max-w-[75%] space-y-1">
+                                            <div className="max-w-[90%] sm:max-w-[75%] space-y-1">
                                                 <div className="text-[10px] font-mono text-[#5B6472] text-right uppercase tracking-wider">
                                                     You · {m.time}
                                                 </div>
@@ -570,31 +570,31 @@ export default function ChatPage() {
                                             </div>
                                         ) : (
                                             /* AI TURN - Full-Width Report Card Format */
-                                            <div className="w-full lex-card p-5 sm:p-6 space-y-4">
+                                            <div className="w-full lex-card p-4 sm:p-6 space-y-3.5">
                                                 {/* Header Chips */}
-                                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E7E9ED] pb-3">
+                                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E7E9ED] pb-2.5">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-xs font-bold text-[#0E1B30] font-display flex items-center gap-1.5">
-                                                            <span className="w-2 h-2 rounded-full bg-[#12786D]"></span> Lex AI Answer
+                                                            <span className="w-2 h-2 rounded-full bg-[#12786D]"></span> LegalBuddy AI Answer
                                                         </span>
-                                                        <span className="text-[10px] font-mono bg-[#F6F7F9] text-[#5B6472] px-2 py-0.5 rounded border border-[#D7DBE2]">
-                                                            General Information
+                                                        <span className="text-[9px] font-mono bg-[#F6F7F9] text-[#5B6472] px-2 py-0.5 rounded border border-[#D7DBE2]">
+                                                            General Info
                                                         </span>
                                                     </div>
-                                                    <span className="text-[11px] font-semibold text-[#0B5850] bg-[#DCEFEC] px-2.5 py-0.5 rounded-full border border-[#0B5850]/15">
+                                                    <span className="text-[10px] sm:text-[11px] font-semibold text-[#0B5850] bg-[#DCEFEC] px-2.5 py-0.5 rounded-full border border-[#0B5850]/15">
                                                         📍 Jurisdiction: {m.state || selectedState}
                                                     </span>
                                                 </div>
 
-                                                {/* Answer Body with Marginalia Citations */}
+                                                {/* Answer Body */}
                                                 <div className="prose prose-slate max-w-none text-[#2C3752]">
                                                     {renderBotReportText(m.text, m.sources)}
                                                 </div>
 
-                                                {/* Primary Citation Sources Footer */}
+                                                {/* Sources Footer */}
                                                 {m.sources && Array.isArray(m.sources) && m.sources.length > 0 && (
-                                                    <div className="mt-4 pt-3 border-t border-[#E7E9ED] space-y-2">
-                                                        <div className="text-[11px] font-mono font-bold uppercase text-[#0B5850] tracking-wider flex items-center gap-1">
+                                                    <div className="mt-3 pt-3 border-t border-[#E7E9ED] space-y-2">
+                                                        <div className="text-[10px] sm:text-[11px] font-mono font-bold uppercase text-[#0B5850] tracking-wider flex items-center gap-1">
                                                             <span>📚 Verified Primary Sources</span>
                                                         </div>
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -611,12 +611,12 @@ export default function ChatPage() {
                                                     </div>
                                                 )}
 
-                                                {/* Action Bar (Including Signature Brass Escalation Button) */}
-                                                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E7E9ED]">
-                                                    <div className="flex items-center gap-2">
+                                                {/* Action Bar */}
+                                                <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[#E7E9ED]">
+                                                    <div className="flex flex-wrap items-center gap-2">
                                                         <button
                                                             onClick={() => copyToClipboard(m.text, i)}
-                                                            className="px-3 py-1.5 rounded-lg border border-[#D7DBE2] hover:bg-[#F6F7F9] text-xs font-semibold text-[#2C3752] transition-colors flex items-center gap-1.5"
+                                                            className="px-2.5 py-1.5 rounded-lg border border-[#D7DBE2] hover:bg-[#F6F7F9] text-xs font-semibold text-[#2C3752] transition-colors flex items-center gap-1 min-h-[36px]"
                                                         >
                                                             <span>{copiedIndex === i ? '✓' : '📋'}</span>
                                                             <span>{copiedIndex === i ? 'Copied' : 'Copy'}</span>
@@ -624,7 +624,7 @@ export default function ChatPage() {
 
                                                         <button
                                                             onClick={() => speakMessage(m.text, i)}
-                                                            className="px-3 py-1.5 rounded-lg border border-[#D7DBE2] hover:bg-[#F6F7F9] text-xs font-semibold text-[#0B5850] transition-colors flex items-center gap-1.5"
+                                                            className="px-2.5 py-1.5 rounded-lg border border-[#D7DBE2] hover:bg-[#F6F7F9] text-xs font-semibold text-[#0B5850] transition-colors flex items-center gap-1.5 min-h-[36px]"
                                                         >
                                                             <span>🔈</span>
                                                             <span>{speakingIndex === i ? 'Speaking...' : 'Listen'}</span>
@@ -633,19 +633,19 @@ export default function ChatPage() {
                                                         {m.chunks && (
                                                             <button
                                                                 onClick={() => setActiveModalSources(m.sources)}
-                                                                className="px-3 py-1.5 rounded-lg bg-[#DCEFEC] text-[#0B5850] border border-[#0B5850]/20 text-xs font-semibold hover:bg-[#0B5850] hover:text-white transition-colors"
+                                                                className="px-2.5 py-1.5 rounded-lg bg-[#DCEFEC] text-[#0B5850] border border-[#0B5850]/20 text-xs font-semibold hover:bg-[#0B5850] hover:text-white transition-colors min-h-[36px]"
                                                             >
                                                                 {m.chunks} Sources
                                                             </button>
                                                         )}
                                                     </div>
 
-                                                    {/* SIGNATURE ELEMENT: Escalation to Human Attorney (Brass 100 / Brass 800) */}
+                                                    {/* Brass Escalation Button */}
                                                     <a
                                                         href="https://barcouncilofindia.org"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="btn-escalation px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-sm"
+                                                        className="btn-escalation px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 shadow-sm"
                                                     >
                                                         <span>Talk to an attorney →</span>
                                                     </a>
@@ -656,7 +656,7 @@ export default function ChatPage() {
                                 ))}
 
                                 {loading && (
-                                    <div className="w-full lex-card p-5 space-y-3 animate-pulse">
+                                    <div className="w-full lex-card p-4 space-y-3 animate-pulse">
                                         <div className="h-4 bg-[#E7E9ED] rounded w-1/4"></div>
                                         <div className="h-3 bg-[#E7E9ED] rounded w-3/4"></div>
                                         <div className="h-3 bg-[#E7E9ED] rounded w-1/2"></div>
@@ -670,14 +670,14 @@ export default function ChatPage() {
                     {/* Sources Modal */}
                     {activeModalSources && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0E1B30]/40 backdrop-blur-sm p-4">
-                            <div className="bg-white max-w-lg w-full rounded-2xl p-6 border border-[#D7DBE2] shadow-2xl space-y-4">
-                                <div className="flex items-center justify-between border-b border-[#E7E9ED] pb-3">
-                                    <h3 className="font-display font-semibold text-lg text-[#0E1B30]">Verified Legal Sources</h3>
+                            <div className="bg-white max-w-lg w-full rounded-2xl p-5 border border-[#D7DBE2] shadow-2xl space-y-3">
+                                <div className="flex items-center justify-between border-b border-[#E7E9ED] pb-2.5">
+                                    <h3 className="font-display font-semibold text-base text-[#0E1B30]">Verified Legal Sources</h3>
                                     <button onClick={() => setActiveModalSources(null)} className="p-1 text-[#5B6472] hover:text-[#0E1B30]">✕</button>
                                 </div>
                                 <div className="max-h-[60vh] overflow-y-auto space-y-2 text-xs">
                                     {Array.isArray(activeModalSources) ? activeModalSources.map((s, idx) => (
-                                        <div key={idx} className="p-3 bg-[#F6F7F9] rounded-lg border border-[#D7DBE2]">
+                                        <div key={idx} className="p-2.5 bg-[#F6F7F9] rounded-lg border border-[#D7DBE2]">
                                             <div className="font-semibold text-[#0E1B30]">• {s.document || s.toString()}</div>
                                             <div className="text-[10px] font-mono text-[#0B5850] mt-1">Section: {s.section || 'N/A'} · Scope: {s.state || 'National'}</div>
                                         </div>
@@ -688,22 +688,43 @@ export default function ChatPage() {
                         </div>
                     )}
 
-                    {/* 5. COMMAND CENTER INPUT DOCK */}
-                    <div className="p-3 sm:p-4 flex-shrink-0 bg-white border-t border-[#D7DBE2] pb-safe">
+                    {/* 5. ELEGANT MOBILE-OPTIMIZED INPUT DOCK */}
+                    <div className="p-2 sm:p-4 flex-shrink-0 bg-white border-t border-[#D7DBE2] pb-safe">
                         <div className="max-w-3xl mx-auto w-full">
-                            <div className="lex-input-container p-2.5 flex flex-col gap-2">
-                                {/* Toolbar Controls Row */}
-                                <div className="flex items-center justify-between gap-2 px-1 text-xs">
-                                    <div className="flex items-center gap-2">
+                            <div className="lex-input-container p-2 sm:p-2.5 flex flex-col gap-1.5">
+                                {/* Text Input & Send Row */}
+                                <div className="flex items-end gap-2 px-1">
+                                    <textarea
+                                        ref={textareaRef}
+                                        value={input}
+                                        onChange={e => setInput(e.target.value)}
+                                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
+                                        placeholder={isListening ? "Listening..." : "Ask a legal question..."}
+                                        className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-base py-1.5 px-1 resize-none max-h-36 min-h-[38px] placeholder-[#5B6472] text-[#0E1B30] font-sans"
+                                        rows={1}
+                                    />
+
+                                    <button
+                                        onClick={loading ? stopGeneration : sendMessage}
+                                        disabled={!input.trim() && !loading}
+                                        className={`h-9 px-3.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center flex-shrink-0 ${(input.trim() || loading) ? 'bg-[#0E1B30] text-white hover:bg-[#1E2E4A]' : 'bg-[#E7E9ED] text-[#5B6472] cursor-not-allowed'}`}
+                                    >
+                                        {loading ? 'Stop' : 'Send →'}
+                                    </button>
+                                </div>
+
+                                {/* Toolbar Controls Sub-Row */}
+                                <div className="flex items-center justify-between gap-1.5 px-1 pt-1.5 border-t border-[#E7E9ED] text-xs">
+                                    <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-x-auto custom-scrollbar pb-0.5">
                                         <select
                                             value={selectedLanguage} onChange={e => setSelectedLanguage(e.target.value)}
-                                            className="lex-select"
+                                            className="lex-select max-w-[120px] text-[11px] truncate"
                                         >
                                             {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.code === 'en' ? '🌐 English' : l.name}</option>)}
                                         </select>
                                         <select
                                             value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                            className="lex-select"
+                                            className="lex-select max-w-[125px] text-[11px] truncate"
                                         >
                                             {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 National' : `📍 ${s}`}</option>)}
                                         </select>
@@ -711,36 +732,16 @@ export default function ChatPage() {
 
                                     <button
                                         onClick={startListening}
-                                        className={`p-1.5 rounded-lg border transition-all ${isListening ? 'bg-[#9C2A22] text-white border-[#9C2A22]' : 'bg-[#F6F7F9] text-[#0B5850] border-[#D7DBE2] hover:bg-[#DCEFEC]'}`}
+                                        className={`h-8 px-2.5 rounded-lg border text-[11px] font-semibold flex items-center gap-1 flex-shrink-0 transition-all ${isListening ? 'bg-[#9C2A22] text-white border-[#9C2A22]' : 'bg-[#F6F7F9] text-[#0B5850] border-[#D7DBE2] hover:bg-[#DCEFEC]'}`}
                                         title="Voice Query"
                                     >
-                                        {isListening ? '🎙️ Listening...' : '🎤 Voice'}
-                                    </button>
-                                </div>
-
-                                {/* Text Input Row */}
-                                <div className="flex items-end gap-2 px-1">
-                                    <textarea
-                                        ref={textareaRef}
-                                        value={input}
-                                        onChange={e => setInput(e.target.value)}
-                                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
-                                        placeholder={isListening ? "Listening carefully..." : "Ask a legal question (e.g. Notice period for tenant eviction in Karnataka)..."}
-                                        className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm py-2 px-1 resize-none max-h-40 min-h-[44px] placeholder-[#5B6472] text-[#0E1B30] font-sans"
-                                        rows={1}
-                                    />
-
-                                    <button
-                                        onClick={loading ? stopGeneration : sendMessage}
-                                        disabled={!input.trim() && !loading}
-                                        className={`py-2.5 px-4 rounded-xl font-semibold text-xs transition-all flex items-center justify-center flex-shrink-0 ${(input.trim() || loading) ? 'bg-[#0E1B30] text-white hover:bg-[#1E2E4A]' : 'bg-[#E7E9ED] text-[#5B6472] cursor-not-allowed'}`}
-                                    >
-                                        {loading ? 'Stopping...' : 'Send →'}
+                                        <span>{isListening ? '🎙️' : '🎤'}</span>
+                                        <span className="hidden sm:inline">{isListening ? 'Listening...' : 'Voice'}</span>
                                     </button>
                                 </div>
                             </div>
-                            <div className="text-[10px] text-center text-[#5B6472] mt-2 font-mono">
-                                Lex AI can make mistakes — verify important claims against primary statutory sources.
+                            <div className="text-[10px] text-center text-[#5B6472] mt-1 font-mono truncate px-2">
+                                LegalBuddy AI provides general info — verify important claims against primary sources.
                             </div>
                         </div>
                     </div>

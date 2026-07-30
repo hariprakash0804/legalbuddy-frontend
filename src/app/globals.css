@@ -54,16 +54,13 @@ html, body {
 .font-sans { font-family: var(--font-ui); }
 .font-mono { font-family: var(--font-mono); }
 
-/* Prevent iOS input zoom by enforcing 16px minimum font size on mobile inputs */
+/* Prevent iOS input zoom by enforcing 16px font size on mobile inputs */
 input, textarea, select {
   font-size: 16px !important;
 }
 @media (min-width: 640px) {
   input, textarea, select {
     font-size: 14px !important;
-  }
-  .text-xs-desktop {
-    font-size: 12px !important;
   }
 }
 
@@ -88,7 +85,7 @@ input, textarea, select {
   color: var(--brass-800);
   border: 1px solid rgba(169, 131, 46, 0.3);
   font-weight: 600;
-  min-height: 44px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -103,8 +100,6 @@ input, textarea, select {
 }
 
 /* Marginalia Citation Tick Marks */
-.marginalia-container { position: relative; }
-
 .marginalia-tick {
   border-left: 3px solid var(--teal-600);
   padding-left: 10px;
@@ -158,10 +153,10 @@ select.lex-select {
   -moz-appearance: none !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230B5850'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 14px;
-  padding-right: 28px !important;
-  padding-left: 10px !important;
+  background-position: right 6px center;
+  background-size: 12px;
+  padding-right: 22px !important;
+  padding-left: 8px !important;
   background-color: var(--teal-100);
   border: 1px solid rgba(11, 88, 80, 0.2);
   border-radius: 8px;
@@ -169,7 +164,8 @@ select.lex-select {
   color: var(--teal-700);
   cursor: pointer;
   outline: none;
-  min-height: 38px;
+  min-height: 32px;
+  max-width: 140px;
   transition: all 0.2s;
 }
 
@@ -223,8 +219,8 @@ select.lex-select:focus {
   }
 }
 
-/* Safe Area Insets for Modern Mobile Screens (iOS & Android) */
-.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px); }
+/* Safe Area Insets for Modern Mobile Screens */
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px); }
 .pt-safe { padding-top: max(env(safe-area-inset-top, 0px), 6px); }
 .px-safe {
   padding-left: max(env(safe-area-inset-left, 0px), 8px);
