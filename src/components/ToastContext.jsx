@@ -7,8 +7,11 @@ export function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
 
     const showToast = useCallback((message, type = 'info', duration = 4000) => {
+        const safeMessage = typeof message === 'string' 
+            ? message 
+            : (typeof message?.message === 'string' ? message.message : String(message || 'Notification'));
         const id = Date.now() + Math.random();
-        setToasts(prev => [...prev, { id, message, type }]);
+        setToasts(prev => [...prev, { id, message: safeMessage, type }]);
 
         setTimeout(() => {
             setToasts(prev => prev.filter(t => t.id !== id));

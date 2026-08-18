@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { authHeader, logout, getApiUrl } from '@/services/auth';
+import { authHeader, logout, getApiUrl, getStoredToken } from '@/services/auth';
 import { useToast } from '@/components/ToastContext';
 
 const LANGUAGES = [
@@ -28,7 +28,7 @@ const LANGUAGES = [
     { code: 'kok', name: 'Konkani (कोंकणी)' },
     { code: 'mni-Mtei', name: 'Manipuri (মৈতৈলোন্)' },
     { code: 'bo', name: 'Bodo (बड़ो)' },
-    { code: 'sat', name: 'Santali (<ctrl42>ᱥᱟᱱᱛᱟᱲᱤ)' },
+    { code: 'sat', name: 'Santali (ᱥᱟᱱᱛᱟᱲᱤ)' },
 ];
 
 const STARTER_QUERIES = [
@@ -58,7 +58,73 @@ const STARTER_QUERIES = [
     }
 ];
 
-// Helper to format bot responses with Marginalia Citations & Paper Quoted Cards
+/**
+ * Safely parses inline markdown without dangerouslySetInnerHTML.
+ * Supports **bold**, *italic*, _italic_, `code`, and [link](url).
+ * Protects against XSS, javascript: URI injection, and DOM clobbering.
+ */
+function renderFormattedInline(text) {
+    if (!text) return null;
+
+    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
+    const parts = text.split(tokenRegex);
+
+    return parts.map((part, index) => {
+        if (!part) return null;
+
+        // Bold: **text**
+        if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+            return (
+                <strong key={index} className="font-semibold text-[#0E1B30]">
+                    {part.slice(2, -2)}
+                </strong>
+            );
+        }
+
+        // Italic: *text* or _text_
+        if ((part.startsWith('*') && part.endsWith('*') && part.length >= 2) ||
+            (part.startsWith('_') && part.endsWith('_') && part.length >= 2)) {
+            return <em key={index}>{part.slice(1, -1)}</em>;
+        }
+
+        // Inline Code: `code`
+        if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+            return (
+                <code key={index} className="font-mono text-xs bg-[#E7E9ED] text-[#0E1B30] px-1 py-0.5 rounded">
+                    {part.slice(1, -1)}
+                </code>
+            );
+        }
+
+        // Link: [text](url)
+        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        if (linkMatch) {
+            const linkText = linkMatch[1];
+            const linkUrl = linkMatch[2].trim();
+            // Strictly enforce safe HTTP/HTTPS protocols
+            const isSafeUrl = /^https?:\/\//i.test(linkUrl);
+            if (isSafeUrl) {
+                return (
+                    <a
+                        key={index}
+                        href={linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#0B5850] underline hover:text-[#12786D]"
+                    >
+                        {linkText}
+                    </a>
+                );
+            }
+            return <span key={index}>{linkText}</span>;
+        }
+
+        // Plain text node (automatically HTML-escaped by React)
+        return <span key={index}>{part}</span>;
+    });
+}
+
+// Helper to format bot responses securely with Marginalia Citations & Paper Quoted Cards
 function renderBotReportText(text, sources) {
     if (!text) return null;
     const lines = text.split('\n');
@@ -67,27 +133,39 @@ function renderBotReportText(text, sources) {
     let citeCounter = 1;
 
     for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        line = line.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[#0E1B30]">$1</strong>');
-        line = line.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
-        line = line.replace(/_(.*?)_/g, '<em>$1</em>');
+        const line = lines[i];
 
         if (line.startsWith('### ')) {
-            elements.push(<h4 key={key++} className="font-sans font-semibold text-base mt-4 mb-2 text-[#0E1B30] border-b border-[#E7E9ED] pb-1 break-words" dangerouslySetInnerHTML={{ __html: line.slice(4) }} />);
+            elements.push(
+                <h4 key={key++} className="font-sans font-semibold text-base mt-4 mb-2 text-[#0E1B30] border-b border-[#E7E9ED] pb-1 break-words">
+                    {renderFormattedInline(line.slice(4))}
+                </h4>
+            );
         } else if (line.startsWith('## ')) {
-            elements.push(<h3 key={key++} className="font-display font-semibold text-lg mt-5 mb-2 text-[#0E1B30] break-words" dangerouslySetInnerHTML={{ __html: line.slice(3) }} />);
+            elements.push(
+                <h3 key={key++} className="font-display font-semibold text-lg mt-5 mb-2 text-[#0E1B30] break-words">
+                    {renderFormattedInline(line.slice(3))}
+                </h3>
+            );
         } else if (line.startsWith('# ')) {
-            elements.push(<h2 key={key++} className="font-display font-bold text-xl mt-6 mb-3 text-[#0E1B30] break-words" dangerouslySetInnerHTML={{ __html: line.slice(2) }} />);
+            elements.push(
+                <h2 key={key++} className="font-display font-bold text-xl mt-6 mb-3 text-[#0E1B30] break-words">
+                    {renderFormattedInline(line.slice(2))}
+                </h2>
+            );
         } else if (line.match(/^[\s]*[-•]\s/)) {
             const currentCite = citeCounter++;
             const sourceItem = Array.isArray(sources) && sources[currentCite - 1];
             const sourceLabel = sourceItem ? (sourceItem.document || sourceItem.section || null) : null;
+            const content = line.replace(/^[\s]*[-•]\s/, '');
 
             elements.push(
                 <div key={key++} className="marginalia-tick flex flex-col gap-0.5 my-2 text-sm">
                     <div className="flex gap-2.5 items-start">
                         <span className="font-mono text-xs text-[#0B5850] font-bold mt-0.5 flex-shrink-0">[{currentCite}]</span>
-                        <span className="text-[#2C3752] leading-relaxed break-words" dangerouslySetInnerHTML={{ __html: line.replace(/^[\s]*[-•]\s/, '') }} />
+                        <span className="text-[#2C3752] leading-relaxed break-words">
+                            {renderFormattedInline(content)}
+                        </span>
                     </div>
                     {sourceLabel && (
                         <div className="ml-6 text-[10px] font-mono text-[#0B5850] opacity-80 truncate">
@@ -102,23 +180,26 @@ function renderBotReportText(text, sources) {
                 elements.push(
                     <div key={key++} className="flex gap-2.5 ml-1 my-2 items-start text-sm">
                         <span className="font-mono text-xs text-[#0B5850] font-bold bg-[#DCEFEC] px-2 py-0.5 rounded border border-[#0B5850]/20 flex-shrink-0">{match[1]}</span>
-                        <span className="text-[#2C3752] leading-relaxed break-words" dangerouslySetInnerHTML={{ __html: match[2] }} />
+                        <span className="text-[#2C3752] leading-relaxed break-words">
+                            {renderFormattedInline(match[2])}
+                        </span>
                     </div>
                 );
             }
         } else if (line.toLowerCase().includes('section') || line.toLowerCase().includes('article')) {
-            // Paper 100 Statute Card
             elements.push(
                 <div key={key++} className="lex-paper p-3.5 my-3 text-xs text-[#0E1B30] leading-relaxed shadow-sm">
                     <div className="text-[10px] font-mono uppercase tracking-wider text-[#0B5850] font-bold mb-1">📜 STATUTE / SECTION CITATION</div>
-                    <div dangerouslySetInnerHTML={{ __html: line }} />
+                    <div>{renderFormattedInline(line)}</div>
                 </div>
             );
         } else if (line.trim() === '') {
             elements.push(<div key={key++} className="h-2" />);
         } else {
             elements.push(
-                <p key={key++} className="my-2 text-sm leading-relaxed text-[#2C3752] break-words" dangerouslySetInnerHTML={{ __html: line }} />
+                <p key={key++} className="my-2 text-sm leading-relaxed text-[#2C3752] break-words">
+                    {renderFormattedInline(line)}
+                </p>
             );
         }
     }
@@ -177,20 +258,49 @@ export default function ChatPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    // Session initialisation & Self-XSS console protection warning
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        if (typeof window !== 'undefined' && !window.__LEGALBUDDY_SEC_WARNED__) {
+            window.__LEGALBUDDY_SEC_WARNED__ = true;
+            console.log(
+                '%cStop!\n%cThis is a browser feature intended for developers. If someone instructed you to paste code here to unlock features or modify your account, it is a scam (Self-XSS attack) and may compromise your session.',
+                'color: #9C2A22; font-size: 20px; font-weight: bold;',
+                'color: #0E1B30; font-size: 13px;'
+            );
+        }
+
+        const token = getStoredToken();
         if (token) {
             const email = localStorage.getItem('userEmail') || 'User';
             setUserEmail(email);
             setIsGuest(false);
             const storageKey = `chat_history_${email}`;
-            const saved = localStorage.getItem(storageKey);
-            if (saved) { try { setMessages(JSON.parse(saved)); } catch { } }
+            try {
+                const saved = localStorage.getItem(storageKey);
+                if (saved) { setMessages(JSON.parse(saved)); }
+            } catch { }
         } else {
             setIsGuest(true);
             setUserEmail('Guest');
         }
         setMounted(true);
+
+        // Multi-tab session synchronization listener
+        const handleStorageSync = (e) => {
+            if (e.key === 'token') {
+                if (!e.newValue) {
+                    setIsGuest(true);
+                    setUserEmail('Guest');
+                    setMessages([]);
+                } else {
+                    const email = localStorage.getItem('userEmail') || 'User';
+                    setUserEmail(email);
+                    setIsGuest(false);
+                }
+            }
+        };
+        window.addEventListener('storage', handleStorageSync);
+        return () => window.removeEventListener('storage', handleStorageSync);
     }, [router]);
 
     const STORAGE_KEY = `chat_history_${userEmail}`;
@@ -212,10 +322,13 @@ export default function ChatPage() {
     useEffect(() => {
         if (!mounted) return;
         if (!isGuest) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            } catch { }
         }
         if (!searchTerm) { scrollRef.current?.scrollIntoView({ behavior: 'smooth' }); }
     }, [messages, STORAGE_KEY, searchTerm, mounted, isGuest]);
+
 
     const filteredMessages = messages.filter(m => m.text.toLowerCase().includes(searchTerm.toLowerCase()));
     const { showToast } = useToast();
@@ -335,12 +448,15 @@ export default function ChatPage() {
 
     const downloadChat = () => {
         const chatText = messages.map(m => `[${m.time}] ${m.role.toUpperCase()}: ${m.text}`).join('\n\n');
-        const blob = new Blob([chatText], { type: 'text/plain' });
+        const blob = new Blob([chatText], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `LegalBuddy_AI_Research_${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
 
     if (!mounted) return (

@@ -13,19 +13,44 @@ export default function Register() {
     const router = useRouter();
     const { showToast } = useToast();
 
+    const validatePassword = (pwd) => {
+        if (pwd.length < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        if (!/[A-Za-z]/.test(pwd) || !/[0-9]/.test(pwd)) {
+            return "Password must contain both letters and numbers.";
+        }
+        return null;
+    };
+
     const handleRegister = async (e) => {
         e.preventDefault();
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail) {
+            showToast("Please enter a valid email address.", "warning");
+            return;
+        }
+
+        const pwdError = validatePassword(password);
+        if (pwdError) {
+            showToast(pwdError, "warning");
+            return;
+        }
+
         setIsSubmitting(true);
         try {
-            await signup(email, password);
+            await signup(trimmedEmail, password);
             showToast('Registration successful! Please login.', 'success');
             router.push('/login');
         } catch (err) {
             const detail = err.response?.data?.detail;
             if (Array.isArray(detail)) {
-                showToast(detail.map(d => d.msg).join(', '), 'error');
+                const message = detail.map(d => typeof d?.msg === 'string' ? d.msg : 'Invalid input').join(', ');
+                showToast(message, 'error');
+            } else if (typeof detail === 'string') {
+                showToast(detail, 'error');
             } else {
-                showToast(detail || 'Registration failed. Please check your inputs.', 'error');
+                showToast('Registration failed. Please check your inputs.', 'error');
             }
         } finally {
             setIsSubmitting(false);
@@ -58,10 +83,13 @@ export default function Register() {
                             <label className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">Email Address</label>
                             <input 
                                 type="email" 
+                                autoComplete="email"
                                 placeholder="name@email.com" 
                                 className="w-full px-3.5 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                value={email}
                                 onChange={(e) => setEmail(e.target.value)} 
                                 required 
+                                maxLength={120}
                             />
                         </div>
 
@@ -70,21 +98,25 @@ export default function Register() {
                             <div className="relative flex items-center">
                                 <input 
                                     type={showPassword ? "text" : "password"} 
+                                    autoComplete="new-password"
                                     placeholder="Create a strong password" 
                                     className="w-full pl-3.5 pr-12 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                    value={password}
                                     onChange={(e) => setPassword(e.target.value)} 
-                                    minLength="8" 
+                                    minLength={8} 
+                                    maxLength={128}
                                     required 
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 text-xs text-[#0B5850] font-semibold px-1 py-0.5"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
                                     {showPassword ? "Hide" : "Show"}
                                 </button>
                             </div>
-                            <p className="text-[10px] text-[#5B6472] mt-1 font-mono">Minimum 8 characters with mixed case & numbers.</p>
+                            <p className="text-[10px] text-[#5B6472] mt-1 font-mono">Minimum 8 characters with letters & numbers.</p>
                         </div>
 
                         <button 
@@ -120,3 +152,4 @@ export default function Register() {
         </div>
     );
 }
+

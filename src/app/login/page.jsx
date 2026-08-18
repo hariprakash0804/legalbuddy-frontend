@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { login } from '@/services/auth';
+import { login, getStoredToken } from '@/services/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/ToastContext';
@@ -14,22 +14,33 @@ export default function Login() {
     const { showToast } = useToast();
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+        if (typeof window !== 'undefined' && getStoredToken()) {
             router.push('/chat');
         }
     }, [router]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail || !password) {
+            showToast("Please provide both email and password.", "warning");
+            return;
+        }
+
         setIsSubmitting(true);
         try {
-            const data = await login(email, password);
+            const data = await login(trimmedEmail, password);
             if (data && data.access_token) {
                 showToast('Login successful! Welcome back.', 'success');
                 router.push('/chat');
+            } else {
+                showToast("Login failed. Please check your credentials.", "error");
             }
         } catch (err) {
-            showToast("Login failed. Please check your credentials.", "error");
+            const errorMsg = typeof err.response?.data?.detail === 'string' 
+                ? err.response.data.detail 
+                : "Login failed. Please check your credentials.";
+            showToast(errorMsg, "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -61,10 +72,13 @@ export default function Login() {
                             <label className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">Email Address</label>
                             <input 
                                 type="email" 
+                                autoComplete="email"
                                 placeholder="name@company.com" 
                                 className="w-full px-3.5 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                value={email}
                                 onChange={(e) => setEmail(e.target.value)} 
                                 required 
+                                maxLength={120}
                             />
                         </div>
 
@@ -73,15 +87,19 @@ export default function Login() {
                             <div className="relative flex items-center">
                                 <input 
                                     type={showPassword ? "text" : "password"} 
+                                    autoComplete="current-password"
                                     placeholder="••••••••" 
                                     className="w-full pl-3.5 pr-12 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                    value={password}
                                     onChange={(e) => setPassword(e.target.value)} 
                                     required 
+                                    maxLength={128}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 text-xs text-[#0B5850] font-semibold px-1 py-0.5"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
                                     {showPassword ? "Hide" : "Show"}
                                 </button>
@@ -121,3 +139,4 @@ export default function Login() {
         </div>
     );
 }
+
