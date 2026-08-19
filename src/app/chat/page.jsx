@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { authHeader, logout, getApiUrl, getStoredToken } from '@/services/auth';
 import { useToast } from '@/components/ToastContext';
+import { validateChatQuery } from '@/utils/validation';
 
 const LANGUAGES = [
     { code: 'en', name: 'English' },
@@ -391,13 +392,20 @@ export default function ChatPage() {
     };
 
     const sendMessage = async () => {
-        if (!input.trim() || loading) return;
+        if (loading) return;
+
+        const validation = validateChatQuery(input);
+        if (!validation.isValid) {
+            showToast(validation.error || "Please enter a valid question.", "warning");
+            return;
+        }
 
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
+        const sanitizedQuestion = input.trim();
         const langLabel = LANGUAGES.find(l => l.code === selectedLanguage)?.name || 'English';
-        const userMsg = { role: 'user', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), language: langLabel, state: selectedState };
+        const userMsg = { role: 'user', text: sanitizedQuestion, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), language: langLabel, state: selectedState };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
@@ -411,7 +419,7 @@ export default function ChatPage() {
 
             const res = await axios.post(`${getApiUrl()}/chat/query`,
                 { 
-                    question: input, 
+                    question: sanitizedQuestion, 
                     target_language: selectedLanguage, 
                     state_filter: selectedState === 'All States' ? null : selectedState, 
                     top_k: 20, 
@@ -605,6 +613,7 @@ export default function ChatPage() {
                                 <input
                                     type="text" placeholder="Search history..."
                                     value={searchTerm}
+                                    maxLength={100}
                                     className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-1 text-xs focus:outline-none focus:border-[#0B5850] transition-all placeholder-[#5B6472]"
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -625,6 +634,7 @@ export default function ChatPage() {
                             <input
                                 type="text" placeholder="Search history..."
                                 value={searchTerm}
+                                maxLength={100}
                                 className="w-full bg-[#F6F7F9] border border-[#D7DBE2] rounded-lg px-3 py-1.5 text-xs focus:outline-none"
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 autoFocus
@@ -816,6 +826,7 @@ export default function ChatPage() {
                                         onChange={e => setInput(e.target.value)}
                                         onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
                                         placeholder={isListening ? "Listening..." : "Ask a legal question..."}
+                                        maxLength={2000}
                                         className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-base py-1.5 px-1 resize-none max-h-36 min-h-[38px] placeholder-[#5B6472] text-[#0E1B30] font-sans"
                                         rows={1}
                                     />
@@ -846,14 +857,23 @@ export default function ChatPage() {
                                         </select>
                                     </div>
 
-                                    <button
-                                        onClick={startListening}
-                                        className={`h-8 px-2.5 rounded-lg border text-[11px] font-semibold flex items-center gap-1 flex-shrink-0 transition-all ${isListening ? 'bg-[#9C2A22] text-white border-[#9C2A22]' : 'bg-[#F6F7F9] text-[#0B5850] border-[#D7DBE2] hover:bg-[#DCEFEC]'}`}
-                                        title="Voice Query"
-                                    >
-                                        <span>{isListening ? '🎙️' : '🎤'}</span>
-                                        <span className="hidden sm:inline">{isListening ? 'Listening...' : 'Voice'}</span>
-                                    </button>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        {input.length > 0 && (
+                                            <span className={`text-[10px] font-mono font-medium transition-colors ${
+                                                input.length > 1900 ? 'text-[#9C2A22] font-bold' : input.length > 1600 ? 'text-[#966016]' : 'text-[#5B6472]'
+                                            }`}>
+                                                {input.length}/2000
+                                            </span>
+                                        )}
+                                        <button
+                                            onClick={startListening}
+                                            className={`h-8 px-2.5 rounded-lg border text-[11px] font-semibold flex items-center gap-1 flex-shrink-0 transition-all ${isListening ? 'bg-[#9C2A22] text-white border-[#9C2A22]' : 'bg-[#F6F7F9] text-[#0B5850] border-[#D7DBE2] hover:bg-[#DCEFEC]'}`}
+                                            title="Voice Query"
+                                        >
+                                            <span>{isListening ? '🎙️' : '🎤'}</span>
+                                            <span className="hidden sm:inline">{isListening ? 'Listening...' : 'Voice'}</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div className="text-[10px] text-center text-[#5B6472] mt-1 font-mono truncate px-2">

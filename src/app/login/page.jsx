@@ -1,15 +1,19 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { login, getStoredToken } from '@/services/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '@/components/ToastContext';
+import { validateEmail, validatePassword } from '@/utils/validation';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [touched, setTouched] = useState({ email: false, password: false });
+    const [submitted, setSubmitted] = useState(false);
+
     const router = useRouter();
     const { showToast } = useToast();
 
@@ -19,15 +23,36 @@ export default function Login() {
         }
     }, [router]);
 
+    // Live validation computations
+    const emailValidation = useMemo(() => validateEmail(email), [email]);
+    const passwordValidation = useMemo(() => validatePassword(password, false), [password]);
+
+    const emailError = (touched.email || submitted) ? emailValidation.error : null;
+    const passwordError = (touched.password || submitted) ? passwordValidation.error : null;
+    const isFormValid = emailValidation.isValid && passwordValidation.isValid;
+
+    const handleBlur = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }));
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        const trimmedEmail = email.trim();
-        if (!trimmedEmail || !password) {
-            showToast("Please provide both email and password.", "warning");
+        setSubmitted(true);
+        setTouched({ email: true, password: true });
+
+        if (!emailValidation.isValid) {
+            showToast(emailValidation.error || "Please enter a valid email address.", "warning");
+            return;
+        }
+
+        if (!passwordValidation.isValid) {
+            showToast(passwordValidation.error || "Please enter your password.", "warning");
             return;
         }
 
         setIsSubmitting(true);
+        const trimmedEmail = email.trim();
+
         try {
             const data = await login(trimmedEmail, password);
             if (data && data.access_token) {
@@ -39,7 +64,7 @@ export default function Login() {
         } catch (err) {
             const errorMsg = typeof err.response?.data?.detail === 'string' 
                 ? err.response.data.detail 
-                : "Login failed. Please check your credentials.";
+                : (err.response?.data?.message || "Login failed. Please check your credentials.");
             showToast(errorMsg, "error");
         } finally {
             setIsSubmitting(false);
@@ -67,51 +92,111 @@ export default function Login() {
                         <p className="text-[#5B6472] text-xs sm:text-sm mt-1">Verifiable legal intelligence for citizens & professionals</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4">
+                    <form onSubmit={handleLogin} noValidate className="space-y-4">
+                        {/* Email Field */}
                         <div className="space-y-1.5">
-                            <label className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">Email Address</label>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="login-email" className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">
+                                    Email Address
+                                </label>
+                                {touched.email && emailValidation.isValid && (
+                                    <span className="text-[11px] text-[#1F6B45] font-medium flex items-center gap-1 font-mono">
+                                        ✓ Valid email
+                                    </span>
+                                )}
+                            </div>
                             <input 
+                                id="login-email"
                                 type="email" 
                                 autoComplete="email"
                                 placeholder="name@company.com" 
-                                className="w-full px-3.5 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                className={`w-full px-3.5 py-3 border rounded-xl bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans transition-colors focus:outline-none ${
+                                    emailError 
+                                        ? 'border-[#9C2A22] focus:border-[#9C2A22] focus:ring-2 focus:ring-[#9C2A22]/20 bg-[#FDF7F7]' 
+                                        : (touched.email && emailValidation.isValid)
+                                        ? 'border-[#1F6B45]/50 focus:border-[#1F6B45] focus:ring-2 focus:ring-[#1F6B45]/20'
+                                        : 'border-[#D7DBE2] focus:border-[#0B5850] focus:ring-2 focus:ring-[#0B5850]/20'
+                                }`}
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)} 
-                                required 
+                                onChange={(e) => setEmail(e.target.value)}
+                                onBlur={() => handleBlur('email')}
+                                aria-invalid={!!emailError}
+                                aria-describedby={emailError ? "login-email-error" : undefined}
                                 maxLength={120}
                             />
+                            {emailError && (
+                                <p id="login-email-error" role="alert" className="text-xs text-[#9C2A22] font-medium flex items-center gap-1 mt-1">
+                                    <span>⚠️</span> {emailError}
+                                </p>
+                            )}
                         </div>
 
+                        {/* Password Field */}
                         <div className="space-y-1.5">
-                            <label className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">Password</label>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="login-password" className="text-xs font-mono font-bold text-[#0E1B30] uppercase tracking-wider">
+                                    Password
+                                </label>
+                                {touched.password && passwordValidation.isValid && (
+                                    <span className="text-[11px] text-[#1F6B45] font-medium flex items-center gap-1 font-mono">
+                                        ✓
+                                    </span>
+                                )}
+                            </div>
                             <div className="relative flex items-center">
                                 <input 
+                                    id="login-password"
                                     type={showPassword ? "text" : "password"} 
                                     autoComplete="current-password"
                                     placeholder="••••••••" 
-                                    className="w-full pl-3.5 pr-12 py-3 border border-[#D7DBE2] rounded-xl focus:outline-none focus:border-[#0B5850] bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans"
+                                    className={`w-full pl-3.5 pr-12 py-3 border rounded-xl bg-white text-[#0E1B30] placeholder-[#5B6472] text-sm font-sans transition-colors focus:outline-none ${
+                                        passwordError 
+                                            ? 'border-[#9C2A22] focus:border-[#9C2A22] focus:ring-2 focus:ring-[#9C2A22]/20 bg-[#FDF7F7]' 
+                                            : (touched.password && passwordValidation.isValid)
+                                            ? 'border-[#1F6B45]/50 focus:border-[#1F6B45] focus:ring-2 focus:ring-[#1F6B45]/20'
+                                            : 'border-[#D7DBE2] focus:border-[#0B5850] focus:ring-2 focus:ring-[#0B5850]/20'
+                                    }`}
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)} 
-                                    required 
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onBlur={() => handleBlur('password')}
+                                    aria-invalid={!!passwordError}
+                                    aria-describedby={passwordError ? "login-password-error" : undefined}
                                     maxLength={128}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 text-xs text-[#0B5850] font-semibold px-1 py-0.5"
+                                    className="absolute right-3 text-xs text-[#0B5850] hover:text-[#12786D] font-semibold px-1.5 py-1 rounded"
                                     aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
                                     {showPassword ? "Hide" : "Show"}
                                 </button>
                             </div>
+                            {passwordError && (
+                                <p id="login-password-error" role="alert" className="text-xs text-[#9C2A22] font-medium flex items-center gap-1 mt-1">
+                                    <span>⚠️</span> {passwordError}
+                                </p>
+                            )}
                         </div>
 
+                        {/* Submit Button */}
                         <button 
                             type="submit" 
                             disabled={isSubmitting}
-                            className="w-full py-3.5 px-4 rounded-xl bg-[#0E1B30] text-white hover:bg-[#1E2E4A] transition-all font-semibold text-sm shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 mt-2"
+                            className={`w-full py-3.5 px-4 rounded-xl text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 mt-2 ${
+                                isSubmitting 
+                                    ? 'bg-[#0E1B30]/70 cursor-wait' 
+                                    : 'bg-[#0E1B30] hover:bg-[#1E2E4A] active:scale-[0.99]'
+                            }`}
                         >
-                            {isSubmitting ? "Signing in..." : "Sign in to account →"}
+                            {isSubmitting ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>Signing in...</span>
+                                </>
+                            ) : (
+                                <span>Sign in to account →</span>
+                            )}
                         </button>
                     </form>
 
@@ -139,4 +224,5 @@ export default function Login() {
         </div>
     );
 }
+
 
