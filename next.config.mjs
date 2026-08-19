@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Standalone output is for self-hosted Docker containers; disabled for Vercel deployments
+  ...(process.env.DOCKER_BUILD === 'true' ? { output: 'standalone' } : {}),
   async headers() {
     return [
       {
