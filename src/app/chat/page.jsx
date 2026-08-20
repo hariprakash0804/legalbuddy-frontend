@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authHeader, logout, getApiUrl, getStoredToken } from '@/services/auth';
 import { useToast } from '@/components/ToastContext';
 import { validateChatQuery } from '@/utils/validation';
+import { ALL_INDIAN_STATES_AND_UTS, INDIAN_STATES, INDIAN_UNION_TERRITORIES } from '@/utils/states';
 
 const LANGUAGES = [
     { code: 'en', name: 'English' },
@@ -227,7 +228,7 @@ export default function ChatPage() {
     const [loading, setLoading] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState('en');
     const [selectedState, setSelectedState] = useState('Karnataka');
-    const [availableStates, setAvailableStates] = useState(['Karnataka', 'Delhi', 'Maharashtra', 'Tamil Nadu', 'All States']);
+    const [availableStates, setAvailableStates] = useState(ALL_INDIAN_STATES_AND_UTS);
     const [isListening, setIsListening] = useState(false);
     const [speakingIndex, setSpeakingIndex] = useState(null);
     const [copiedIndex, setCopiedIndex] = useState(null);
@@ -313,7 +314,8 @@ export default function ChatPage() {
                 const headers = isGuest ? {} : authHeader();
                 const res = await axios.get(`${getApiUrl()}/chat/states`, { headers });
                 if (res.data.states && res.data.states.length > 0) {
-                    setAvailableStates(res.data.states);
+                    const merged = Array.from(new Set(['All States', ...res.data.states, ...ALL_INDIAN_STATES_AND_UTS]));
+                    setAvailableStates(merged);
                 }
             } catch (err) { }
         };
@@ -521,9 +523,15 @@ export default function ChatPage() {
                                 </span>
                                 <select
                                     value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                    className="text-[11px] font-semibold text-[#0B5850] bg-transparent border-none outline-none cursor-pointer underline"
+                                    className="text-[11px] font-semibold text-[#0B5850] bg-transparent border-none outline-none cursor-pointer underline max-w-[140px] truncate"
                                 >
-                                    {availableStates.map(s => <option key={s} value={s}>{s}</option>)}
+                                    <option value="All States">National (All India)</option>
+                                    <optgroup label="States (28)">
+                                        {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </optgroup>
+                                    <optgroup label="Union Territories (8)">
+                                        {INDIAN_UNION_TERRITORIES.map(ut => <option key={ut} value={ut}>{ut}</option>)}
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -851,9 +859,15 @@ export default function ChatPage() {
                                         </select>
                                         <select
                                             value={selectedState} onChange={e => setSelectedState(e.target.value)}
-                                            className="lex-select max-w-[125px] text-[11px] truncate"
+                                            className="lex-select max-w-[140px] text-[11px] truncate"
                                         >
-                                            {availableStates.map(s => <option key={s} value={s}>{s === 'All States' ? '📍 National' : `📍 ${s}`}</option>)}
+                                            <option value="All States">📍 National (All India)</option>
+                                            <optgroup label="States (28)">
+                                                {INDIAN_STATES.map(s => <option key={s} value={s}>📍 {s}</option>)}
+                                            </optgroup>
+                                            <optgroup label="Union Territories (8)">
+                                                {INDIAN_UNION_TERRITORIES.map(ut => <option key={ut} value={ut}>📍 {ut}</option>)}
+                                            </optgroup>
                                         </select>
                                     </div>
 
